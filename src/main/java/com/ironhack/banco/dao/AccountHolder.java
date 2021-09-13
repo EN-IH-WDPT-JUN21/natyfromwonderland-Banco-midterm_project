@@ -1,5 +1,6 @@
 package com.ironhack.banco.dao;
 
+import com.ironhack.banco.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public class AccountHolder {
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
-    @NotBlank(message = "Name cannot be blank")
+    @NotBlank(message = "Date of birth cannot be blank")
     private Date dateOfBirth;
 
     @AttributeOverrides({
@@ -52,6 +53,8 @@ public class AccountHolder {
     @Valid
     @Embedded
     private Optional<Address> mailingAddress;
+
+    private final Role role = Role.ACCOUNT_HOLDER;
 
 
 }

@@ -1,5 +1,6 @@
 package com.ironhack.banco.dao;
 
+import com.ironhack.banco.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,7 @@ public class ThirdParty {
 
     private String hashedKey;
     private String name;
+
+    private final Role role = Role.THIRD_PARTY;
 
 }

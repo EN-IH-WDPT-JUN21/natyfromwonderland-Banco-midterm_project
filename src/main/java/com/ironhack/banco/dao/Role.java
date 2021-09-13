@@ -1,20 +1,24 @@
 package com.ironhack.banco.dao;
 
-import com.ironhack.banco.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Admin {
-    private String name;
+public class Role {
 
-    private final Role role = Role.ADMIN;
+    @Enumerated
+    private Role name;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 }
