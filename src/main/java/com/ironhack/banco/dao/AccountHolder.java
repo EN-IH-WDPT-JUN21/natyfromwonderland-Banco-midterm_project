@@ -1,6 +1,6 @@
 package com.ironhack.banco.dao;
 
-import com.ironhack.banco.enums.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,9 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Getter
@@ -18,11 +20,8 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AccountHolder {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@PrimaryKeyJoinColumn(name = "id")
+public class AccountHolder extends User{
 
     @NotBlank(message = "Name cannot be blank")
     private String name;
@@ -52,9 +51,23 @@ public class AccountHolder {
 
     @Valid
     @Embedded
-    private Optional<Address> mailingAddress;
+    private Address mailingAddress;
 
-    private final Role role = Role.ACCOUNT_HOLDER;
+    public Optional getMailingAddress() {
+        return Optional.ofNullable(this.mailingAddress);
+    }
 
+    public void setMailingAddress(final Address mailingAddress) {
+        this.mailingAddress = mailingAddress;
+    }
+
+
+   @JsonManagedReference
+    @OneToMany(mappedBy = "primaryOwner")
+    private List<Account> accountList;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "secondaryOwner")
+    private List<Account> accountListTwo;
 
 }

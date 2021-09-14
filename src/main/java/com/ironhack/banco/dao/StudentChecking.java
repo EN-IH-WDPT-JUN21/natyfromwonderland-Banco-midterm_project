@@ -11,8 +11,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
-public class StudentChecking {
+public class StudentChecking extends Account{
 }

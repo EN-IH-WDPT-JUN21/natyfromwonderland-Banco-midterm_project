@@ -1,5 +1,6 @@
 package com.ironhack.banco.dao;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ironhack.banco.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,21 +19,49 @@ import java.util.Optional;
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Account {
+public class Account {
     @Id
-    protected Long id;
+    private Long id;
 
-    protected Money balance;
-    protected Long secretKey;
-    protected final Money penaltyFee = new Money(new BigDecimal("40.00"));
-    protected Date creationDate;
+    @AttributeOverrides({
+            @AttributeOverride(name="amount",column=@Column(name="balance")),
+            @AttributeOverride(name="currency",column=@Column(name="balance_currency"))
+    })
+
+    @Embedded
+    private Money balance;
+    private Long secretKey;
+
+    @AttributeOverrides({
+            @AttributeOverride(name="amount",column=@Column(name="penalty_fee")),
+            @AttributeOverride(name="currency",column=@Column(name="penalty_currency"))
+    })
+    @Embedded
+    private final Money penaltyFee = new Money(new BigDecimal("40.00"));
+    private Date creationDate;
 
     @Enumerated
-    protected Status status;
+    private Status status;
 
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "primary_owner_id")
     @Valid
     private AccountHolder primaryOwner;
 
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "secondary_owner_id")
     @Valid
-    private Optional<AccountHolder> secondaryOwner;
+    private AccountHolder secondaryOwner;
+
+    public Optional getSecondaryOwner() {
+        return Optional.ofNullable(this.secondaryOwner);
+    }
+
+    public void setSecondaryOwner(final AccountHolder secondaryOwner) {
+        this.secondaryOwner = secondaryOwner;
+    }
+
+
 }

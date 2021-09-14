@@ -1,5 +1,5 @@
 package com.ironhack.banco.enums;
 
-public enum Role {
+public enum Roles {
     ADMIN, ACCOUNT_HOLDER, THIRD_PARTY
 }

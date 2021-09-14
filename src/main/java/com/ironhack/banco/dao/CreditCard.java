@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.validation.constraints.DecimalMax;
@@ -17,11 +18,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
-public class CreditCard {
+public class CreditCard extends Account{
 
     @DecimalMin("0.1")
     private BigDecimal interestRate = new BigDecimal("0.2");
 
+    @Embedded
     @DecimalMax("100000.00")
     private Money creditLimit = new Money(new BigDecimal("100.00"));
 }
