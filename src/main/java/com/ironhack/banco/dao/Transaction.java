@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
@@ -25,5 +26,7 @@ public class Transaction {
     private Long senderId;
     private Long receiverId;
 
-    private Date date;
+    @Basic
+    private Timestamp transactionTime;
+
 }
