@@ -44,10 +44,12 @@ public class Checking extends Account {
         LocalDate today = LocalDate.now();
         Period diff = Period.between(today, getCreationDate());
         BigDecimal months = new BigDecimal(diff.getMonths());
-        if (balance.getAmount().doubleValue() >= monthlyMaintenanceFee.getAmount().doubleValue() && months.doubleValue()>=1) {
+        if (balance.getAmount().doubleValue() >= monthlyMaintenanceFee.getAmount().doubleValue()
+                && months.doubleValue()>=1) {
             BigDecimal appliedFee = monthlyMaintenanceFee.getAmount().multiply(months);
             balance.decreaseAmount(appliedFee);
-            if (balance.getAmount().doubleValue() < minBalance.getAmount().doubleValue()) {
+            if (balance.getAmount().doubleValue() < minBalance.getAmount().doubleValue()
+                    && balance.getAmount().doubleValue() > getPenaltyFee().getAmount().doubleValue()) {
                 balance.decreaseAmount(getPenaltyFee().getAmount());
             }
         } else {

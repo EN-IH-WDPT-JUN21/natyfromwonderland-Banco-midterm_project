@@ -2,16 +2,20 @@ package com.ironhack.banco.dao;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ironhack.banco.enums.Status;
+import com.ironhack.banco.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +27,9 @@ import java.util.Optional;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Account {
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     @Id
     private Long id;
@@ -94,8 +101,23 @@ public class Account {
         this.setBalance(newBalance);
     }
 
-    public void addTransaction(Transaction transaction){
+    public void addTransaction(Transaction transaction) {
+
+        //var transactionsMax =
+       // if()
         this.transactions.add(transaction);
+
+    }
+
+    public void exceedsMaxAmount(BigDecimal amount){
+        Transaction transaction = new Transaction();
+        Timestamp start = transaction.getTransactionTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(start.getTime());
+        cal.add(Calendar.HOUR, -24);
+        start = new Timestamp(cal.getTime().getTime());
+        var transactionsRecent = transactionRepository.findByAccountIdAndTransactionTimeBetween(
+                this.id, start, transaction.getTransactionTime());
     }
 
     public BigDecimal findMaxAmount(List<Transaction> transactions){

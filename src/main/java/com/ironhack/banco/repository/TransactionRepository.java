@@ -18,5 +18,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findAll();
     List<Transaction> findByTransactionTime (Timestamp transactionTime);
     List<Transaction> findByAccountIdAndTransactionTimeBetween(Long id, Timestamp start, Timestamp finish);
+    List<Transaction> findByAccountId(Long id);
 
 }
