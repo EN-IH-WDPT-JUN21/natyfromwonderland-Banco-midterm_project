@@ -1,12 +1,14 @@
 package com.ironhack.banco.dao;
 
 import com.ironhack.banco.enums.Status;
+import com.ironhack.banco.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,6 +16,7 @@ import java.time.Month;
 import java.time.Period;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,7 +32,6 @@ public class Checking extends Account {
     })
 
     @Embedded
-    @DecimalMin("250.00")
     private Money minBalance;
 
     @AttributeOverrides({
@@ -40,23 +42,30 @@ public class Checking extends Account {
     @Embedded
     private final Money monthlyMaintenanceFee = new Money(new BigDecimal("12.00"));
 
-    public void setBalance(Money balance){
+    public void setMinBalance(Money minBalance){
+        if(minBalance.getAmount().doubleValue()<250.00){
+            minBalance.setAmount(new BigDecimal("250.00"));
+        }
+        this.minBalance = minBalance;
+    }
+    public void applyFees(){
         LocalDate today = LocalDate.now();
-        Period diff = Period.between(today, getCreationDate());
+        Period diff = Period.between(getCreationDate(), today);
         BigDecimal months = new BigDecimal(diff.getMonths());
-        if (balance.getAmount().doubleValue() >= monthlyMaintenanceFee.getAmount().doubleValue()
+        if (getBalance().getAmount().doubleValue() >= monthlyMaintenanceFee.getAmount().doubleValue()
                 && months.doubleValue()>=1) {
             BigDecimal appliedFee = monthlyMaintenanceFee.getAmount().multiply(months);
-            balance.decreaseAmount(appliedFee);
-            if (balance.getAmount().doubleValue() < minBalance.getAmount().doubleValue()
-                    && balance.getAmount().doubleValue() > getPenaltyFee().getAmount().doubleValue()) {
-                balance.decreaseAmount(getPenaltyFee().getAmount());
+            setBalance(new Money(getBalance().decreaseAmount(appliedFee)));
+            if (getBalance().getAmount().doubleValue() < this.minBalance.getAmount().doubleValue()
+                    && getBalance().getAmount().doubleValue() > getPenaltyFee().getAmount().doubleValue()) {
+                setBalance(new Money(getBalance().decreaseAmount(getPenaltyFee().getAmount())));
             }
-        } else {
-            setStatus(Status.FROZEN);
         }
-        balance = balance;
+    }
 
+    public Checking(Long id, Money balance, Long secretKey, LocalDate creationDate, @Valid AccountHolder primaryOwner, List<Transaction> transactions, Money minBalance) {
+        super(id, balance, secretKey, creationDate, primaryOwner, transactions);
+        setMinBalance(minBalance);
     }
 
 }

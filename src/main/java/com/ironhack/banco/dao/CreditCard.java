@@ -13,6 +13,7 @@ import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,21 +27,19 @@ public class CreditCard extends Account{
     private BigDecimal interestRate = new BigDecimal("0.2");
 
     @Embedded
-    @DecimalMax("100000.00")
     private Money creditLimit = new Money(new BigDecimal("100.00"));
 
-    public void setBalance(Money balance){
+    public void applyInterest(){
         LocalDate today = LocalDate.now();
-        Period diff = Period.between(today, getCreationDate());
+        Period diff = Period.between(getCreationDate(), today);
         int months = diff.getMonths();
-        if (months>=1 && balance.getAmount().doubleValue() > 0 ) {
-            BigDecimal appliedInterest = BigDecimal.ONE.add(interestRate).pow(months).multiply(balance.getAmount());
-            balance.decreaseAmount(appliedInterest);
+        if (months>=1 && getBalance().getAmount().doubleValue() > 0 ) {
+            BigDecimal appliedInterest = BigDecimal.ONE.add(interestRate).pow(months).multiply(getBalance().getAmount());
+            setBalance(new Money(appliedInterest));
         }
-        balance = balance;
     }
 
-    
+
     public void sendMoney(BigDecimal amount) throws Exception {
         Money newBalance = new Money(getBalance().increaseAmount(amount));
         if(newBalance.getAmount().doubleValue() <= creditLimit.getAmount().doubleValue()) {
@@ -50,4 +49,17 @@ public class CreditCard extends Account{
         }
     }
 
+    public void setCreditLimit( Money creditLimit){
+        if(creditLimit.getAmount().doubleValue()>100000){
+            creditLimit.setAmount(new BigDecimal("100000"));
+        }
+        this.creditLimit = creditLimit;
+    }
+
+    public CreditCard(Long id, Money balance, Long secretKey, LocalDate creationDate, AccountHolder primaryOwner,
+                      List<Transaction> transactions, BigDecimal interestRate, Money creditLimit) {
+        super(id, balance, secretKey, creationDate, primaryOwner, transactions);
+        this.interestRate = interestRate;
+        setCreditLimit(creditLimit);
+    }
 }

@@ -28,18 +28,17 @@ public class Savings extends Account{
     @DecimalMin("100.00")
     private Money minBalance = new Money(new BigDecimal("1000.00"));
 
-    public void setBalance(Money balance){
+    public void applyInterest(){
         LocalDate today = LocalDate.now();
         Period diff = Period.between(today, getCreationDate());
         int years = diff.getYears();
         if (years>=1) {
-            BigDecimal appliedInterest = BigDecimal.ONE.add(interestRate).pow(years).multiply(balance.getAmount());
-            balance.increaseAmount(appliedInterest);
-            if (balance.getAmount().doubleValue() < minBalance.getAmount().doubleValue()) {
-                balance.decreaseAmount(getPenaltyFee().getAmount());
+            BigDecimal appliedInterest = BigDecimal.ONE.add(interestRate).pow(years).multiply(getBalance().getAmount());
+            setBalance(new Money(appliedInterest));
+            if (getBalance().getAmount().doubleValue() < minBalance.getAmount().doubleValue()) {
+                getBalance().decreaseAmount(getPenaltyFee().getAmount());
             }
         }
-        balance = balance;
 
     }
 }

@@ -1,6 +1,7 @@
 package com.ironhack.banco.dao;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Embeddable;
@@ -8,12 +9,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Currency;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Embeddable
 public class Money {
     private static final Currency GBP = Currency.getInstance("GBP");
     private static final RoundingMode DEFAULT_ROUNDING = RoundingMode.HALF_EVEN;
 
-    private final Currency currency;
+    private Currency currency;
     private BigDecimal amount;
 
     //Class constructor specifying amount, currency, and rounding
@@ -60,7 +64,7 @@ public class Money {
         return this.amount;
     }
 
-    private void setAmount(BigDecimal amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

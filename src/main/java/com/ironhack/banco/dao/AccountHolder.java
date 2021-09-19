@@ -9,6 +9,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +28,8 @@ public class AccountHolder extends User{
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
-    @NotBlank(message = "Date of birth cannot be blank")
-    private Date dateOfBirth;
+    @NotNull(message = "Date of birth cannot be blank")
+    private LocalDate dateOfBirth;
 
     @AttributeOverrides({
             @AttributeOverride(name="houseNumber",column=@Column(name="current_house_number")),
@@ -53,6 +55,7 @@ public class AccountHolder extends User{
     @Embedded
     private Address mailingAddress;
 
+
     public Optional getMailingAddress() {
         return Optional.ofNullable(this.mailingAddress);
     }
@@ -69,5 +72,11 @@ public class AccountHolder extends User{
     @JsonManagedReference
     @OneToMany(mappedBy = "secondaryOwner")
     private List<Account> accountListTwo;
+
+    public AccountHolder(String name, LocalDate dateOfBirth, Address primaryAddress) {
+        this.name = name;
+        this.dateOfBirth = dateOfBirth;
+        this.primaryAddress = primaryAddress;
+    }
 
 }

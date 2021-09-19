@@ -1,6 +1,7 @@
 package com.ironhack.banco.dao;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ironhack.banco.enums.Status;
 import com.ironhack.banco.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
@@ -15,10 +16,7 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Getter
 @Setter
@@ -28,8 +26,6 @@ import java.util.Optional;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Account {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
 
     @Id
     private Long id;
@@ -51,7 +47,7 @@ public class Account {
     private final Money penaltyFee = new Money(new BigDecimal("40.00"));
     private LocalDate creationDate;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
     @JsonBackReference
@@ -74,17 +70,10 @@ public class Account {
         this.secondaryOwner = secondaryOwner;
     }
 
-    @ManyToMany
-    @JoinTable(
-            name = "accounts_have_transactions",
-            joinColumns = {@JoinColumn(name = "account_id")},
-            inverseJoinColumns = {@JoinColumn(name = "transaction_id")}
-    )
+    @JsonManagedReference
+    @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
 
-    public void freezeAcc(Account account){
-        account.setStatus(Status.FROZEN);
-    }
 
     //@Transactional
     public void sendMoney(Money amount) throws Exception {
@@ -102,33 +91,16 @@ public class Account {
     }
 
     public void addTransaction(Transaction transaction) {
-
-        //var transactionsMax =
-       // if()
         this.transactions.add(transaction);
-
-    }
-
-    public void exceedsMaxAmount(BigDecimal amount){
-        Transaction transaction = new Transaction();
-        Timestamp start = transaction.getTransactionTime();
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(start.getTime());
-        cal.add(Calendar.HOUR, -24);
-        start = new Timestamp(cal.getTime().getTime());
-        var transactionsRecent = transactionRepository.findByAccountIdAndTransactionTimeBetween(
-                this.id, start, transaction.getTransactionTime());
-    }
-
-    public BigDecimal findMaxAmount(List<Transaction> transactions){
-        BigDecimal maxValue = new BigDecimal("0");
-        for(int i= 0; i< transactions.size(); i++){
-            if(transactions.get(i).getTransactionAmount().getAmount().doubleValue()>maxValue.doubleValue()){
-                maxValue = transactions.get(i).getTransactionAmount().getAmount();
-            }
-        }
-        return maxValue;
     }
 
 
+    public Account(Long id, Money balance, Long secretKey, LocalDate creationDate, AccountHolder primaryOwner, List<Transaction> transactions) {
+        this.id = id;
+        this.balance = balance;
+        this.secretKey = secretKey;
+        this.creationDate = creationDate;
+        this.primaryOwner = primaryOwner;
+        this.transactions = transactions;
+    }
 }
