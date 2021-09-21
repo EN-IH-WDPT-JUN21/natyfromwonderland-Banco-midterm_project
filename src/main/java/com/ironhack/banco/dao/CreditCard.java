@@ -29,12 +29,12 @@ public class CreditCard extends Account{
     @Embedded
     private Money creditLimit = new Money(new BigDecimal("100.00"));
 
-    public void applyInterest(){
-        LocalDate today = LocalDate.now();
-        Period diff = Period.between(getCreationDate(), today);
+    public void applyInterest(LocalDate date){
+        BigDecimal interestApplied = interestRate.divide(new BigDecimal("12"));
+        Period diff = Period.between(getCreationDate(), date);
         int months = diff.getMonths();
         if (months>=1 && getBalance().getAmount().doubleValue() > 0 ) {
-            BigDecimal appliedInterest = BigDecimal.ONE.add(interestRate).pow(months).multiply(getBalance().getAmount());
+            BigDecimal appliedInterest = BigDecimal.ONE.add(interestApplied).pow(months).multiply(getBalance().getAmount());
             setBalance(new Money(appliedInterest));
         }
     }

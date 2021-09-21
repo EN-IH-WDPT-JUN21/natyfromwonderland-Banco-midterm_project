@@ -21,5 +21,8 @@ public class ThirdParty {
     private String hashedKey;
     private String name;
 
-
+    public ThirdParty(String hashedKey, String name) {
+        this.hashedKey = hashedKey;
+        this.name = name;
+    }
 }

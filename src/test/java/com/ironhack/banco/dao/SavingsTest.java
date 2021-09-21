@@ -1,11 +1,10 @@
 package com.ironhack.banco.dao;
 
 import com.ironhack.banco.BancoApplication;
-import com.ironhack.banco.enums.Status;
 import com.ironhack.banco.repository.AccountHolderRepository;
 import com.ironhack.banco.repository.AccountRepository;
 import com.ironhack.banco.repository.CheckingRepository;
-import com.ironhack.banco.repository.TransactionRepository;
+import com.ironhack.banco.repository.SavingsRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,14 +14,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Currency;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class CheckingTest {
+class SavingsTest {
 
     @MockBean
     private BancoApplication bancoApplication;
@@ -34,13 +31,13 @@ class CheckingTest {
     private AccountRepository accountRepository;
 
     @Autowired
-    private CheckingRepository checkingRepository;
+    private SavingsRepository savingsRepository;
 
     @Autowired
     private AccountHolderRepository accountHolderRepository;
 
-    Checking ch1;
-    Checking ch2;
+    Savings sav1;
+    Savings sav2;
     AccountHolder accountHolder;
     List<Transaction> transactions;
     Address address;
@@ -50,28 +47,30 @@ class CheckingTest {
         address = new Address(1, "Abbey Road", "NW1 3WA", "London", "United Kingdom");
         accountHolder = new AccountHolder("Adam Smith", LocalDate.of(1986,5,15), address);
         accountHolderRepository.save(accountHolder);
-        ch1 = new Checking(234578784L, new Money(new BigDecimal("1000")), 567478L,
-                LocalDate.of(2021,4,20), accountHolder, transactions, new Money(new BigDecimal("150")));
-        ch2 = new Checking(234578234L, new Money(new BigDecimal("350")), 567498L,
-                LocalDate.of(2021,3,24), accountHolder, transactions, new Money(new BigDecimal("300")));
-        checkingRepository.saveAll(List.of(ch1, ch2));
-
+        sav1 = new Savings(234579784L, new Money(new BigDecimal("1000")), 567478L,
+                LocalDate.of(2020,4,20), accountHolder, transactions,
+                new BigDecimal("0.0025"), new Money(new BigDecimal("500")));
+        sav2 = new Savings(233578234L, new Money(new BigDecimal("350")), 567498L,
+                LocalDate.of(2021,3,24), accountHolder, transactions,
+                new BigDecimal("0.0025"), new Money(new BigDecimal("50")));
+        savingsRepository.saveAll(List.of(sav1, sav2));
     }
 
     @AfterEach
     void tearDown() {
-        checkingRepository.deleteAll();
+        savingsRepository.deleteAll();
+        accountRepository.deleteAll();
         accountHolderRepository.deleteAll();
     }
 
     @Test
-    void setMinBalance() {
-        assertEquals(new BigDecimal("250.00"), ch1.getMinBalance().getAmount());
+    void applyInterest() {
+        sav1.applyInterest(LocalDate.of(2021, 9, 19));
+        assertEquals(new BigDecimal("1002.50"), sav1.getBalance().getAmount());
     }
 
     @Test
-    void applyFees() {
-        ch1.applyFees(LocalDate.of(2021, 9, 19));
-        assertEquals(new BigDecimal("952.00"), ch1.getBalance().getAmount());
+    void setMinBalance() {
+        assertEquals(new BigDecimal("100.00"), sav2.getMinBalance().getAmount());
     }
 }

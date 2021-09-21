@@ -48,9 +48,9 @@ public class Checking extends Account {
         }
         this.minBalance = minBalance;
     }
-    public void applyFees(){
-        LocalDate today = LocalDate.now();
-        Period diff = Period.between(getCreationDate(), today);
+
+    public void applyFees(LocalDate date){
+        Period diff = Period.between(getCreationDate(), date);
         BigDecimal months = new BigDecimal(diff.getMonths());
         if (getBalance().getAmount().doubleValue() >= monthlyMaintenanceFee.getAmount().doubleValue()
                 && months.doubleValue()>=1) {

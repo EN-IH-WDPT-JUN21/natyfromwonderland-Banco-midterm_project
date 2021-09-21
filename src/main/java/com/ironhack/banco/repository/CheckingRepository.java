@@ -4,6 +4,8 @@ import com.ironhack.banco.dao.Checking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface CheckingRepository extends JpaRepository<Checking, Long> {
+import javax.transaction.Transactional;
+
+@Transactional
+public interface CheckingRepository extends AccountBaseRepository<Checking> {
 }

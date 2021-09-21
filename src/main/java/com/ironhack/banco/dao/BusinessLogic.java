@@ -1,6 +1,7 @@
 package com.ironhack.banco.dao;
 
 import com.ironhack.banco.enums.Status;
+import com.ironhack.banco.exceptions.ExceedsMaxAmount;
 import com.ironhack.banco.repository.AccountRepository;
 import com.ironhack.banco.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class BusinessLogic {
         account.setStatus(Status.FROZEN);
     }
 
-    public void notExceedMaxAmount(Account account, Transaction transaction, BigDecimal amount){
+    public void notExceedMaxAmount(Account account, Transaction transaction, BigDecimal amount)  {
         Timestamp start = transaction.getTransactionTime();
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(start.getTime());
@@ -34,8 +35,12 @@ public class BusinessLogic {
         start = new Timestamp(cal.getTime().getTime());
         var transactionsRecent = transactionRepository.findByAccountIdAndTransactionTimeBetween(
                 account.getId(), start, transaction.getTransactionTime());
-        if(amount.doubleValue()<=(findMaxAmount(accountRepository.getById(account.getId()).getTransactions()).doubleValue()*1.5)){
+        if(amount.doubleValue()>45 && amount.doubleValue()<=(findMaxAmount(transactionsRecent)).doubleValue()*1.5){
             transaction.setTransactionAmount(new Money(amount));
+        } else if(amount.doubleValue()<=45){
+            transaction.setTransactionAmount(new Money(amount));
+        } else {
+            freezeAcc(account);
         }
 
     }
@@ -50,6 +55,8 @@ public class BusinessLogic {
                 account.getId(), start, transaction.getTransactionTime());
         if(transactionsRecent.size()<=1){
             transaction.setTransactionAmount(new Money(amount));
+        } else {
+            freezeAcc(account);
         }
 
     }

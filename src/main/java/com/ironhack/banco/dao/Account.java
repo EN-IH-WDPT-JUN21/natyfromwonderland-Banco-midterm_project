@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 
 @Getter
@@ -23,7 +24,9 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance
+@DiscriminatorColumn(name = "account_type")
+@Table(name = "accounts")
 public class Account {
 
 
@@ -72,10 +75,9 @@ public class Account {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "account")
-    private List<Transaction> transactions;
+    private List<Transaction> transactions = new ArrayList<>();
 
 
-    //@Transactional
     public void sendMoney(Money amount) throws Exception {
         Money newBalance = new Money(balance.decreaseAmount(amount));
         if(newBalance.getAmount().doubleValue() >= 0) {
@@ -101,6 +103,13 @@ public class Account {
         this.secretKey = secretKey;
         this.creationDate = creationDate;
         this.primaryOwner = primaryOwner;
-        this.transactions = transactions;
+        setTransactions(transactions);
+    }
+
+    //This will be needed for account creation process
+    public int checkPrimaryOwnerAge(LocalDate date){
+        Period diff = Period.between(getPrimaryOwner().getDateOfBirth(), date);
+        int age = diff.getYears();
+        return age;
     }
 }

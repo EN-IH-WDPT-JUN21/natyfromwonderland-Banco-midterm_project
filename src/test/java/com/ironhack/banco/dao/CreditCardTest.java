@@ -61,8 +61,8 @@ class CreditCardTest {
 
     @Test
     void applyInterest() {
-        cc1.applyInterest();
-        assertEquals(new BigDecimal("1749.01"), cc1.getBalance().getAmount());
+        cc1.applyInterest(LocalDate.of(2021, 9, 19));
+        assertEquals(new BigDecimal("1050.95"), cc1.getBalance().getAmount());
 
     }
 

@@ -25,9 +25,6 @@ public class Transaction {
     @Embedded
     private Money transactionAmount;
 
-    private Long senderId;
-    private Long receiverId;
-
     @Basic
     private Timestamp transactionTime;
 
@@ -35,5 +32,11 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
+
+    public Transaction(Money transactionAmount, Timestamp transactionTime, Account account) {
+        this.transactionAmount = transactionAmount;
+        this.transactionTime = transactionTime;
+        this.account = account;
+    }
 
 }

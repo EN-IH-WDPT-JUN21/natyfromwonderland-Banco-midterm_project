@@ -34,18 +34,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder);
     }
 
-   /* @Override
+   @Override
     protected void configure(HttpSecurity http) throws Exception{
         http.httpBasic();
         http.csrf().disable();
         http.authorizeRequests()
-                .mvcMatchers(HttpMethod.PUT, "/blogs/**").hasAnyRole("ADMIN", "CONTRIBUTOR")
-                .mvcMatchers(HttpMethod.PUT, "/authors/**").hasAnyRole("ADMIN", "CONTRIBUTOR")
-                .mvcMatchers(HttpMethod.POST, "/blogs").hasAnyRole("ADMIN", "CONTRIBUTOR")
-                .mvcMatchers(HttpMethod.POST, "/authors").hasAnyRole("ADMIN")
-                .mvcMatchers(HttpMethod.DELETE, "/authors/**").hasAnyRole("ADMIN")
-                .mvcMatchers(HttpMethod.DELETE, "/blogs/**").hasAnyRole("ADMIN")
+                //.mvcMatchers(HttpMethod.PUT, "/blogs/**").hasAnyRole("ADMIN", "CONTRIBUTOR")
+                //.mvcMatchers(HttpMethod.PUT, "/authors/**").hasAnyRole("ADMIN", "CONTRIBUTOR")
+               // .mvcMatchers(HttpMethod.POST, "/blogs").hasAnyRole("ADMIN", "CONTRIBUTOR")
+                //.mvcMatchers(HttpMethod.POST, "/authors").hasAnyRole("ADMIN")
+                //.mvcMatchers(HttpMethod.DELETE, "/authors/**").hasAnyRole("ADMIN")
+               // .mvcMatchers(HttpMethod.DELETE, "/blogs/**").hasAnyRole("ADMIN")
                 .anyRequest().permitAll();
-    }*/
+    }
 
 }
