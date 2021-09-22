@@ -23,7 +23,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@PrimaryKeyJoinColumn(name = "id")
 public class Checking extends Account {
 
     @AttributeOverrides({
@@ -49,9 +48,9 @@ public class Checking extends Account {
         this.minBalance = minBalance;
     }
 
-    public void applyFees(LocalDate date){
-        Period diff = Period.between(getCreationDate(), date);
-        BigDecimal months = new BigDecimal(diff.getMonths());
+    public Money applyFees(Date date){
+        Long difference = date.getTime() - getCreationDate().getTime();
+        BigDecimal months = BigDecimal.valueOf((difference / (1000l*60*60*24*30)));
         if (getBalance().getAmount().doubleValue() >= monthlyMaintenanceFee.getAmount().doubleValue()
                 && months.doubleValue()>=1) {
             BigDecimal appliedFee = monthlyMaintenanceFee.getAmount().multiply(months);
@@ -61,9 +60,10 @@ public class Checking extends Account {
                 setBalance(new Money(getBalance().decreaseAmount(getPenaltyFee().getAmount())));
             }
         }
+        return this.getBalance();
     }
 
-    public Checking(Long id, Money balance, Long secretKey, LocalDate creationDate, @Valid AccountHolder primaryOwner, List<Transaction> transactions, Money minBalance) {
+    public Checking(Long id, Money balance, Long secretKey, Date creationDate, @Valid AccountHolder primaryOwner, List<Transaction> transactions, Money minBalance) {
         super(id, balance, secretKey, creationDate, primaryOwner, transactions);
         setMinBalance(minBalance);
     }

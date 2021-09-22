@@ -14,7 +14,6 @@ import javax.persistence.PrimaryKeyJoinColumn;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@PrimaryKeyJoinColumn(name = "id")
 public class Admin extends User{
     private String name;
 

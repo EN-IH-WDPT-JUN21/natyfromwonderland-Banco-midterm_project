@@ -13,6 +13,7 @@ import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -20,7 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@PrimaryKeyJoinColumn(name = "id")
 public class CreditCard extends Account{
 
     @DecimalMin("0.1")
@@ -29,14 +29,15 @@ public class CreditCard extends Account{
     @Embedded
     private Money creditLimit = new Money(new BigDecimal("100.00"));
 
-    public void applyInterest(LocalDate date){
+    public Money applyInterest(Date date){
         BigDecimal interestApplied = interestRate.divide(new BigDecimal("12"));
-        Period diff = Period.between(getCreationDate(), date);
-        int months = diff.getMonths();
-        if (months>=1 && getBalance().getAmount().doubleValue() > 0 ) {
-            BigDecimal appliedInterest = BigDecimal.ONE.add(interestApplied).pow(months).multiply(getBalance().getAmount());
+        Long difference = date.getTime() - getCreationDate().getTime();
+        BigDecimal months = BigDecimal.valueOf((difference / (1000l*60*60*24*30)));
+        if (months.doubleValue()>=1 && getBalance().getAmount().doubleValue() > 0 ) {
+            BigDecimal appliedInterest = BigDecimal.ONE.add(interestApplied).pow(months.intValue()).multiply(getBalance().getAmount());
             setBalance(new Money(appliedInterest));
         }
+        return this.getBalance();
     }
 
 
@@ -56,7 +57,7 @@ public class CreditCard extends Account{
         this.creditLimit = creditLimit;
     }
 
-    public CreditCard(Long id, Money balance, Long secretKey, LocalDate creationDate, AccountHolder primaryOwner,
+    public CreditCard(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner,
                       List<Transaction> transactions, BigDecimal interestRate, Money creditLimit) {
         super(id, balance, secretKey, creationDate, primaryOwner, transactions);
         this.interestRate = interestRate;

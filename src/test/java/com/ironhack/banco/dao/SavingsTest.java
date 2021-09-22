@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,13 +46,13 @@ class SavingsTest {
     @BeforeEach
     void setUp() {
         address = new Address(1, "Abbey Road", "NW1 3WA", "London", "United Kingdom");
-        accountHolder = new AccountHolder("Adam Smith", LocalDate.of(1986,5,15), address);
+        accountHolder = new AccountHolder("Adam Smith", new Date(1986,5,15), address);
         accountHolderRepository.save(accountHolder);
         sav1 = new Savings(234579784L, new Money(new BigDecimal("1000")), 567478L,
-                LocalDate.of(2020,4,20), accountHolder, transactions,
+                new Date(2020,4,20), accountHolder, transactions,
                 new BigDecimal("0.0025"), new Money(new BigDecimal("500")));
         sav2 = new Savings(233578234L, new Money(new BigDecimal("350")), 567498L,
-                LocalDate.of(2021,3,24), accountHolder, transactions,
+                new Date(2021,3,24), accountHolder, transactions,
                 new BigDecimal("0.0025"), new Money(new BigDecimal("50")));
         savingsRepository.saveAll(List.of(sav1, sav2));
     }
@@ -65,7 +66,7 @@ class SavingsTest {
 
     @Test
     void applyInterest() {
-        sav1.applyInterest(LocalDate.of(2021, 9, 19));
+        sav1.applyInterest(new Date(2021, 9, 19));
         assertEquals(new BigDecimal("1002.50"), sav1.getBalance().getAmount());
     }
 

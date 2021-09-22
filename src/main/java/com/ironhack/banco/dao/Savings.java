@@ -13,6 +13,7 @@ import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -20,7 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@PrimaryKeyJoinColumn(name = "id")
 public class Savings extends Account{
 
     @DecimalMax("0.5")
@@ -29,16 +29,17 @@ public class Savings extends Account{
     @Embedded
     private Money minBalance = new Money(new BigDecimal("1000.00"));
 
-    public void applyInterest(LocalDate date){
-        Period diff = Period.between(getCreationDate(), date);
-        int years = diff.getYears();
+    public Money applyInterest(Date date){
+        Long difference = date.getTime() - getCreationDate().getTime();
+        Long years = (difference / (1000l*60*60*24*365));
         if (years>=1) {
-            BigDecimal appliedInterest = BigDecimal.ONE.add(interestRate).pow(years).multiply(getBalance().getAmount());
+            BigDecimal appliedInterest = BigDecimal.ONE.add(interestRate).pow(years.intValue()).multiply(getBalance().getAmount());
             setBalance(new Money(appliedInterest));
             if (getBalance().getAmount().doubleValue() < minBalance.getAmount().doubleValue()) {
                 getBalance().decreaseAmount(getPenaltyFee().getAmount());
             }
         }
+        return this.getBalance();
     }
 
     public void setMinBalance(Money minBalance){
@@ -48,7 +49,7 @@ public class Savings extends Account{
         this.minBalance = minBalance;
     }
 
-    public Savings(Long id, Money balance, Long secretKey, LocalDate creationDate, AccountHolder primaryOwner,
+    public Savings(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner,
                    List<Transaction> transactions, BigDecimal interestRate, Money minBalance) {
         super(id, balance, secretKey, creationDate, primaryOwner, transactions);
         this.interestRate = interestRate;

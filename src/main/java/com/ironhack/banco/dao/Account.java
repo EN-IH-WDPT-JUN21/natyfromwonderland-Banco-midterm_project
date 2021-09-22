@@ -1,6 +1,7 @@
 package com.ironhack.banco.dao;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ironhack.banco.enums.Status;
 import com.ironhack.banco.repository.TransactionRepository;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
@@ -48,7 +50,7 @@ public class Account {
     })
     @Embedded
     private final Money penaltyFee = new Money(new BigDecimal("40.00"));
-    private LocalDate creationDate;
+    private Date creationDate;
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
@@ -97,7 +99,7 @@ public class Account {
     }
 
 
-    public Account(Long id, Money balance, Long secretKey, LocalDate creationDate, AccountHolder primaryOwner, List<Transaction> transactions) {
+    public Account(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner, List<Transaction> transactions) {
         this.id = id;
         this.balance = balance;
         this.secretKey = secretKey;
@@ -107,9 +109,9 @@ public class Account {
     }
 
     //This will be needed for account creation process
-    public int checkPrimaryOwnerAge(LocalDate date){
-        Period diff = Period.between(getPrimaryOwner().getDateOfBirth(), date);
-        int age = diff.getYears();
+    public Long checkPrimaryOwnerAge(Date date){
+        Long difference = date.getTime() - this.getPrimaryOwner().getDateOfBirth().getTime();
+        Long age = (difference / (1000l*60*60*24*365));
         return age;
     }
 }

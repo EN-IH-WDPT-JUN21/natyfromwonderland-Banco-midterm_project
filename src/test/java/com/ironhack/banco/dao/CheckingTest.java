@@ -48,12 +48,12 @@ class CheckingTest {
     @BeforeEach
     void setUp() {
         address = new Address(1, "Abbey Road", "NW1 3WA", "London", "United Kingdom");
-        accountHolder = new AccountHolder("Adam Smith", LocalDate.of(1986,5,15), address);
+        accountHolder = new AccountHolder("Adam Smith", new Date(1986,5,15), address);
         accountHolderRepository.save(accountHolder);
         ch1 = new Checking(234578784L, new Money(new BigDecimal("1000")), 567478L,
-                LocalDate.of(2021,4,20), accountHolder, transactions, new Money(new BigDecimal("150")));
+                new Date(2021,4,20), accountHolder, transactions, new Money(new BigDecimal("150")));
         ch2 = new Checking(234578234L, new Money(new BigDecimal("350")), 567498L,
-                LocalDate.of(2021,3,24), accountHolder, transactions, new Money(new BigDecimal("300")));
+                new Date(2021,3,24), accountHolder, transactions, new Money(new BigDecimal("300")));
         checkingRepository.saveAll(List.of(ch1, ch2));
 
     }
@@ -71,7 +71,7 @@ class CheckingTest {
 
     @Test
     void applyFees() {
-        ch1.applyFees(LocalDate.of(2021, 9, 19));
-        assertEquals(new BigDecimal("952.00"), ch1.getBalance().getAmount());
+        ch1.applyFees(new Date(2021, 9, 19));
+        assertEquals(new BigDecimal("940.00"), ch1.getBalance().getAmount());
     }
 }

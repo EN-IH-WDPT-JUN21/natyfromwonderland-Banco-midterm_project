@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,13 +48,13 @@ class AccountTest {
     void setUp() {
         address = new Address(1, "Abbey Road", "NW1 3WA", "London", "United Kingdom");
         address2 = new Address(2, "Camden New Road", "SW1 3WA", "London", "United Kingdom");
-        accountHolder = new AccountHolder("Adam Smith", LocalDate.of(1986,5,15), address);
-        accountHolder2 = new AccountHolder("Jane Ayre", LocalDate.of(1956,7,25), address2);
+        accountHolder = new AccountHolder("Adam Smith", new Date(1986,5,15), address);
+        accountHolder2 = new AccountHolder("Jane Ayre", new Date(1956,7,25), address2);
         accountHolderRepository.saveAll(List.of(accountHolder, accountHolder2));
         acc1 = new Account(234578784L, new Money(new BigDecimal("1000")), 567478L,
-                LocalDate.of(2021,4,20), accountHolder, transactions);
+                new Date(2021,4,20), accountHolder, transactions);
         acc2 = new Account(234578234L, new Money(new BigDecimal("350")), 567498L,
-                LocalDate.of(2021,3,24), accountHolder2, transactions2);
+                new Date(2021,3,24), accountHolder2, transactions2);
         accountRepository.saveAll(List.of(acc1, acc2));
     }
 
@@ -86,6 +87,6 @@ class AccountTest {
 
     @Test
     void checkPrimaryOwnerAge(){
-        assertEquals(35, acc1.checkPrimaryOwnerAge(LocalDate.of(2021, 9, 19)));
+        assertEquals(35, acc1.checkPrimaryOwnerAge(new Date(2021, 9, 19)));
     }
 }

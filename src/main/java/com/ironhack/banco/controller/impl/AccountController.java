@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -43,8 +46,11 @@ public class AccountController implements IAccountController {
     //Route to create a new checking account
     @PostMapping("/accounts/create/checking")
     @ResponseStatus(HttpStatus.CREATED)
-    public Checking createNewChecking(@RequestBody @Valid Checking checking){
-        if(checking.checkPrimaryOwnerAge(LocalDate.now())>=24) {
+    public Checking createNewChecking(@RequestBody @Valid Checking checking) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date today = new Date();
+        Date date = dateFormat.parse(today.toString());
+        if(checking.checkPrimaryOwnerAge(date).intValue()>=24) {
             return checkingRepository.save(checking);
         } else{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Checking account is only created for " +
@@ -55,8 +61,11 @@ public class AccountController implements IAccountController {
     //Route to create a new  student checking account
     @PostMapping("/accounts/create/studentchecking")
     @ResponseStatus(HttpStatus.CREATED)
-    public StudentChecking createStudentChecking(@RequestBody @Valid StudentChecking studentChecking){
-        if(studentChecking.checkPrimaryOwnerAge(LocalDate.now())<24) {
+    public StudentChecking createStudentChecking(@RequestBody @Valid StudentChecking studentChecking) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date today = new Date();
+        Date date = dateFormat.parse(today.toString());
+        if(studentChecking.checkPrimaryOwnerAge(date)<24) {
             return studentCheckingRepository.save(studentChecking);
         } else{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student checking account is only created for " +
@@ -67,8 +76,11 @@ public class AccountController implements IAccountController {
     //Route to create a new credit card account (assuming it's only available for adults)
     @PostMapping("/accounts/create/creditcard")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreditCard createNewCreditCard(@RequestBody @Valid CreditCard creditCard){
-        if(creditCard.checkPrimaryOwnerAge(LocalDate.now())>=18) {
+    public CreditCard createNewCreditCard(@RequestBody @Valid CreditCard creditCard) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date today = new Date();
+        Date date = dateFormat.parse(today.toString());
+        if(creditCard.checkPrimaryOwnerAge(date)>=18) {
                 return creditCardRepository.save(creditCard);
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Credit Card account is only created for " +
@@ -91,10 +103,23 @@ public class AccountController implements IAccountController {
 
     @GetMapping("/accounts/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Account getById(@PathVariable(name = "id") Long id){
+    public Account getById(@PathVariable(name = "id") Long id) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
+        Optional<Checking> optionalChecking = checkingRepository.findById(id);
+        Optional<StudentChecking> optionalStudentChecking = studentCheckingRepository.findById(id);
+        Optional<Savings> optionalSavings = savingsRepository.findById(id);
+        Optional<CreditCard> optionalCreditCard = creditCardRepository.findById(id);
 
-        return optionalAccount.isPresent()? optionalAccount.get(): null;
+        if (optionalAccount.isPresent() && optionalChecking.isPresent()) {
+            return optionalChecking.get();
+        } else if (optionalAccount.isPresent() && optionalStudentChecking.isPresent()) {
+            return optionalStudentChecking.get();
+        } else if (optionalAccount.isPresent() && optionalSavings.isPresent()) {
+            return optionalSavings.get();
+        } else if (optionalAccount.isPresent() && optionalCreditCard.isPresent()) {
+            return optionalCreditCard.get();
+        }
+        return null;
     }
 
 }

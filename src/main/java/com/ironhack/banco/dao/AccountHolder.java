@@ -29,7 +29,7 @@ public class AccountHolder extends User{
     private String name;
 
     @NotNull(message = "Date of birth cannot be blank")
-    private LocalDate dateOfBirth;
+    private Date dateOfBirth;
 
     @AttributeOverrides({
             @AttributeOverride(name="houseNumber",column=@Column(name="current_house_number")),
@@ -73,7 +73,7 @@ public class AccountHolder extends User{
     @OneToMany(mappedBy = "secondaryOwner")
     private List<Account> accountListTwo;
 
-    public AccountHolder(String name, LocalDate dateOfBirth, Address primaryAddress) {
+    public AccountHolder(String name, Date dateOfBirth, Address primaryAddress) {
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
