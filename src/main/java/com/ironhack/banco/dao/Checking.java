@@ -23,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@PrimaryKeyJoinColumn(name = "id")
 public class Checking extends Account {
 
     @AttributeOverrides({

@@ -27,7 +27,7 @@ public class BusinessLogic {
         account.setStatus(Status.FROZEN);
     }
 
-    public void notExceedMaxAmount(Account account, Transaction transaction, BigDecimal amount)  {
+    public Boolean notExceedMaxAmount(Account account, Transaction transaction, BigDecimal amount)  {
         Timestamp start = transaction.getTransactionTime();
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(start.getTime());
@@ -36,16 +36,14 @@ public class BusinessLogic {
         var transactionsRecent = transactionRepository.findByAccountIdAndTransactionTimeBetween(
                 account.getId(), start, transaction.getTransactionTime());
         if(amount.doubleValue()>45 && amount.doubleValue()<=(findMaxAmount(transactionsRecent)).doubleValue()*1.5){
-            transaction.setTransactionAmount(new Money(amount));
+            return true;
         } else if(amount.doubleValue()<=45){
-            transaction.setTransactionAmount(new Money(amount));
-        } else {
-            freezeAcc(account);
+            return true;
         }
-
+        return false;
     }
 
-    public void notExceedMaxCount(Account account, Transaction transaction, BigDecimal amount){
+    public Boolean notExceedMaxCount(Account account, Transaction transaction, BigDecimal amount){
         Timestamp start = transaction.getTransactionTime();
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(start.getTime());
@@ -54,11 +52,9 @@ public class BusinessLogic {
         var transactionsRecent = transactionRepository.findByAccountIdAndTransactionTimeBetween(
                 account.getId(), start, transaction.getTransactionTime());
         if(transactionsRecent.size()<=1){
-            transaction.setTransactionAmount(new Money(amount));
-        } else {
-            freezeAcc(account);
+            return true;
         }
-
+        return false;
     }
 
     public BigDecimal findMaxAmount(List<Transaction> transactions){

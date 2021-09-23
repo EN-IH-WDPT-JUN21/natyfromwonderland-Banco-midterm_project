@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@PrimaryKeyJoinColumn(name = "id")
 public class CreditCard extends Account{
 
     @DecimalMin("0.1")

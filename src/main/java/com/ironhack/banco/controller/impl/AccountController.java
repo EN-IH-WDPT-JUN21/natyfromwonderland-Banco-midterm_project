@@ -103,21 +103,29 @@ public class AccountController implements IAccountController {
 
     @GetMapping("/accounts/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Account getById(@PathVariable(name = "id") Long id) {
-        Optional<Account> optionalAccount = accountRepository.findById(id);
-        Optional<Checking> optionalChecking = checkingRepository.findById(id);
-        Optional<StudentChecking> optionalStudentChecking = studentCheckingRepository.findById(id);
-        Optional<Savings> optionalSavings = savingsRepository.findById(id);
-        Optional<CreditCard> optionalCreditCard = creditCardRepository.findById(id);
+    public Account getById(@PathVariable(name = "id") Long id) throws ParseException {
+        Optional<Account> account = accountRepository.findById(id);
 
-        if (optionalAccount.isPresent() && optionalChecking.isPresent()) {
-            return optionalChecking.get();
-        } else if (optionalAccount.isPresent() && optionalStudentChecking.isPresent()) {
-            return optionalStudentChecking.get();
-        } else if (optionalAccount.isPresent() && optionalSavings.isPresent()) {
-            return optionalSavings.get();
-        } else if (optionalAccount.isPresent() && optionalCreditCard.isPresent()) {
-            return optionalCreditCard.get();
+        if(account.isPresent()) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date today = new Date();
+            Date date = dateFormat.parse(today.toString());
+
+            if (account.get() instanceof Checking) {
+                account.get().setBalance(((Checking) account.get()).applyFees(date));
+                accountRepository.save(account.get());
+                return account.get();
+            } else if (account.get() instanceof StudentChecking) {
+                return account.get();
+            } else if (account.get() instanceof Savings) {
+                account.get().setBalance(((Savings) account.get()).applyInterest(date));
+                accountRepository.save(account.get());
+                return account.get();
+            } else if (account.get() instanceof CreditCard) {
+                account.get().setBalance(((CreditCard) account.get()).applyInterest(date));
+                accountRepository.save(account.get());
+                return account.get();
+            }
         }
         return null;
     }

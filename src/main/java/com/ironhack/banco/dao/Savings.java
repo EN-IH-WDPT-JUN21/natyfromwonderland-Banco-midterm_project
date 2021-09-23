@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@PrimaryKeyJoinColumn(name = "id")
 public class Savings extends Account{
 
     @DecimalMax("0.5")

@@ -1,6 +1,5 @@
 package com.ironhack.banco.dao;
 
-import com.ironhack.banco.enums.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,11 +18,14 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated
-    private Roles name;
+    private String name;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    public Role(String name, User user) {
+        this.name = name;
+        this.user = user;
+    }
 }

@@ -95,6 +95,10 @@ class AccountControllerTest {
     @AfterEach
     void tearDown() {
         accountRepository.deleteAll();
+        creditCardRepository.deleteAll();
+        checkingRepository.deleteAll();
+        studentCheckingRepository.deleteAll();
+        savingsRepository.deleteAll();
         accountHolderRepository.deleteAll();
     }
 

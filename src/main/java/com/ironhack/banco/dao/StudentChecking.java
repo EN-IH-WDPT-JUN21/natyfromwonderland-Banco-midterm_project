@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @Entity
+@PrimaryKeyJoinColumn(name = "id")
 public class StudentChecking extends Account{
 
     public StudentChecking(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner, List<Transaction> transactions) {

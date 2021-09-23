@@ -26,8 +26,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Inheritance
-@DiscriminatorColumn(name = "account_type")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "accounts")
 public class Account {
 

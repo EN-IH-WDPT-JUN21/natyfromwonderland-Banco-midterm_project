@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 
 @Transactional
-public interface CreditCardRepository extends AccountBaseRepository<CreditCard> {
+public interface CreditCardRepository extends JpaRepository<CreditCard, Long> {
 }
