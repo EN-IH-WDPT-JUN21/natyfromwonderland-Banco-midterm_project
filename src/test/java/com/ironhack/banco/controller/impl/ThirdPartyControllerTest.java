@@ -2,9 +2,8 @@ package com.ironhack.banco.controller.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.banco.BancoApplication;
-import com.ironhack.banco.dao.BusinessLogic;
-import com.ironhack.banco.dao.ThirdParty;
-import com.ironhack.banco.repository.AccountRepository;
+import com.ironhack.banco.dao.accounts.BusinessLogic;
+import com.ironhack.banco.dao.utils.ThirdParty;
 import com.ironhack.banco.repository.ThirdPartyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

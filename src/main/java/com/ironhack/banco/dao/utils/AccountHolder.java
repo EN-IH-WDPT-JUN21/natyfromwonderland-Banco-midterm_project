@@ -1,6 +1,7 @@
-package com.ironhack.banco.dao;
+package com.ironhack.banco.dao.utils;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ironhack.banco.dao.accounts.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,11 +11,9 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 
 @Getter

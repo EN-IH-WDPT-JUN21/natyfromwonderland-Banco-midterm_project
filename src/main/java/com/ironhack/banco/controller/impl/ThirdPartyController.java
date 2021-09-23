@@ -1,8 +1,7 @@
 package com.ironhack.banco.controller.impl;
 
 import com.ironhack.banco.controller.interfaces.IThirdPartyController;
-import com.ironhack.banco.dao.ThirdParty;
-import com.ironhack.banco.dao.Transaction;
+import com.ironhack.banco.dao.utils.ThirdParty;
 import com.ironhack.banco.dto.TransactionDTO;
 import com.ironhack.banco.repository.ThirdPartyRepository;
 import org.springframework.beans.factory.annotation.Autowired;

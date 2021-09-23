@@ -1,7 +1,6 @@
 package com.ironhack.banco.dto;
 
-import com.ironhack.banco.dao.Account;
-import com.ironhack.banco.dao.Money;
+import com.ironhack.banco.dao.utils.Money;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

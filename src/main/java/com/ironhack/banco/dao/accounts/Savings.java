@@ -1,5 +1,7 @@
-package com.ironhack.banco.dao;
+package com.ironhack.banco.dao.accounts;
 
+import com.ironhack.banco.dao.utils.AccountHolder;
+import com.ironhack.banco.dao.utils.Money;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +11,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
-public class Savings extends Account{
+public class Savings extends Account {
 
     @DecimalMax("0.5")
     private BigDecimal interestRate = new BigDecimal("0.0025");

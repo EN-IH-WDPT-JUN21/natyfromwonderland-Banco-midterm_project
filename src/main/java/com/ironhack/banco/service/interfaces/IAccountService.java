@@ -1,6 +1,6 @@
 package com.ironhack.banco.service.interfaces;
 
-import com.ironhack.banco.dao.Money;
+import com.ironhack.banco.dao.utils.Money;
 
 public interface IAccountService {
 

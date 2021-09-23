@@ -1,6 +1,6 @@
 package com.ironhack.banco;
 
-import com.ironhack.banco.dao.BusinessLogic;
+import com.ironhack.banco.dao.accounts.BusinessLogic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

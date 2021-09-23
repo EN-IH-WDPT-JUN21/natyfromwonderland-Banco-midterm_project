@@ -1,11 +1,15 @@
 package com.ironhack.banco.dao;
 
 import com.ironhack.banco.BancoApplication;
-import com.ironhack.banco.enums.Status;
+import com.ironhack.banco.dao.accounts.BusinessLogic;
+import com.ironhack.banco.dao.accounts.Checking;
+import com.ironhack.banco.dao.accounts.Transaction;
+import com.ironhack.banco.dao.utils.AccountHolder;
+import com.ironhack.banco.dao.utils.Address;
+import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.repository.AccountHolderRepository;
 import com.ironhack.banco.repository.AccountRepository;
 import com.ironhack.banco.repository.CheckingRepository;
-import com.ironhack.banco.repository.TransactionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 

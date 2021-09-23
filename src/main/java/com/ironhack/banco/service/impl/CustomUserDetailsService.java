@@ -1,6 +1,6 @@
 package com.ironhack.banco.service.impl;
 
-import com.ironhack.banco.dao.User;
+import com.ironhack.banco.dao.utils.User;
 import com.ironhack.banco.repository.UserRepository;
 import com.ironhack.banco.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;

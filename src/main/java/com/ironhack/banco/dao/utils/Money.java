@@ -1,4 +1,4 @@
-package com.ironhack.banco.dao;
+package com.ironhack.banco.dao.utils;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.ironhack.banco.security;
 
-import com.ironhack.banco.dao.Role;
-import com.ironhack.banco.dao.User;
+import com.ironhack.banco.dao.utils.Role;
+import com.ironhack.banco.dao.utils.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

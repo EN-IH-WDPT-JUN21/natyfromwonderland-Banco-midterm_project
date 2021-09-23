@@ -1,24 +1,18 @@
-package com.ironhack.banco.dao;
+package com.ironhack.banco.dao.accounts;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ironhack.banco.dao.utils.AccountHolder;
+import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.enums.Status;
-import com.ironhack.banco.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
 
 @Getter

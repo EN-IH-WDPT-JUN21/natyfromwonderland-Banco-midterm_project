@@ -1,7 +1,7 @@
-package com.ironhack.banco.dao;
+package com.ironhack.banco.dao.accounts;
 
-import com.ironhack.banco.enums.Status;
-import com.ironhack.banco.repository.TransactionRepository;
+import com.ironhack.banco.dao.utils.AccountHolder;
+import com.ironhack.banco.dao.utils.Money;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,12 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.Valid;
-import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Period;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.ironhack.banco.repository;
 
-import com.ironhack.banco.dao.AccountHolder;
+import com.ironhack.banco.dao.utils.AccountHolder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

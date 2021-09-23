@@ -1,7 +1,6 @@
-package com.ironhack.banco.dao;
+package com.ironhack.banco.dao.accounts;
 
 import com.ironhack.banco.enums.Status;
-import com.ironhack.banco.exceptions.ExceedsMaxAmount;
 import com.ironhack.banco.repository.AccountRepository;
 import com.ironhack.banco.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.Calendar;
 import java.util.List;
 

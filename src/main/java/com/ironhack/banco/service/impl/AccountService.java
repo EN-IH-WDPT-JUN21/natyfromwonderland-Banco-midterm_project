@@ -1,7 +1,7 @@
 package com.ironhack.banco.service.impl;
 
-import com.ironhack.banco.dao.Account;
-import com.ironhack.banco.dao.Money;
+import com.ironhack.banco.dao.accounts.Account;
+import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.repository.AccountRepository;
 import com.ironhack.banco.service.interfaces.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;

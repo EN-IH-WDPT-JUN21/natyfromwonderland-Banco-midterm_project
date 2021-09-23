@@ -1,4 +1,4 @@
-package com.ironhack.banco.dao;
+package com.ironhack.banco.dao.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,17 +12,20 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class ThirdParty {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String hashedKey;
     private String name;
 
-    public ThirdParty(String hashedKey, String name) {
-        this.hashedKey = hashedKey;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public Role(String name, User user) {
         this.name = name;
+        this.user = user;
     }
 }
