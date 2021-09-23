@@ -41,7 +41,7 @@ public class CreditCard extends Account {
     }
 
 
-    public void sendMoney(BigDecimal amount) throws Exception {
+    public void sendMoneyCC(Money amount) throws Exception {
         Money newBalance = new Money(getBalance().increaseAmount(amount));
         if(newBalance.getAmount().doubleValue() <= creditLimit.getAmount().doubleValue()) {
             this.setBalance(newBalance);

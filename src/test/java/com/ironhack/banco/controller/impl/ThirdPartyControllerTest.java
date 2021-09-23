@@ -3,8 +3,17 @@ package com.ironhack.banco.controller.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.banco.BancoApplication;
 import com.ironhack.banco.dao.accounts.BusinessLogic;
+import com.ironhack.banco.dao.accounts.Savings;
+import com.ironhack.banco.dao.accounts.Transaction;
+import com.ironhack.banco.dao.utils.AccountHolder;
+import com.ironhack.banco.dao.utils.Address;
+import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.dao.utils.ThirdParty;
+import com.ironhack.banco.dto.TransactionDTO;
+import com.ironhack.banco.repository.AccountHolderRepository;
+import com.ironhack.banco.repository.SavingsRepository;
 import com.ironhack.banco.repository.ThirdPartyRepository;
+import com.ironhack.banco.repository.TransactionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +25,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,21 +52,44 @@ class ThirdPartyControllerTest {
     @Autowired
     private ThirdPartyRepository thirdPartyRepository;
 
+    @Autowired
+    private SavingsRepository savingsRepository;
+
+    @Autowired
+    private AccountHolderRepository accountHolderRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
     private ThirdParty thirdParty;
     private ThirdParty thirdParty2;
+    private Savings savings1;
+    AccountHolder accountHolder;
+    List<Transaction> transactions;
+    Address address;
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        thirdParty = new ThirdParty("th567483jnskt679", "Adam Smith Inc");
+
+        address = new Address(1, "Abbey Road", "NW1 3WA", "London", "United Kingdom");
+        accountHolder = new AccountHolder("Adam Smith", new Date(1986,5,15), address);
+        accountHolderRepository.save(accountHolder);
+        thirdParty = new ThirdParty("th567483jnskt679", "Debenhams Ltd");
 
         thirdPartyRepository.save(thirdParty);
+
+        savings1 = new Savings(234578784L, new Money(new BigDecimal("1000")), 563478L,
+                new Date(2020,4,20), accountHolder, transactions,
+                new BigDecimal("0.0025"), new Money(new BigDecimal("500")));
 
     }
 
     @AfterEach
     void tearDown(){
         thirdPartyRepository.deleteAll();
+        savingsRepository.deleteAll();
+        accountHolderRepository.deleteAll();
     }
 
     @Test
@@ -66,5 +103,19 @@ class ThirdPartyControllerTest {
             ).andExpect(status().isCreated()).andReturn();
             assertTrue(result.getResponse().getContentAsString().contains("Pizza Hut"));
 
+    }
+
+    @Test
+    void sendMoney_NoError() throws Exception {
+        TransactionDTO transaction = new TransactionDTO(new Money(new BigDecimal("30")), savings1.getId(), savings1.getSecretKey());
+        String param = thirdParty.getHashedKey();
+        String body = objectMapper.writeValueAsString(transaction);
+        MvcResult result = mockMvc.perform(
+                post("/thirdparty/sendmoney")
+                        .queryParam(param)
+                        .content(body)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isCreated()).andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains("234578784L"));
     }
 }

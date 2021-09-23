@@ -32,15 +32,15 @@ public class BusinessLogic {
         start = new Timestamp(cal.getTime().getTime());
         var transactionsRecent = transactionRepository.findByAccountIdAndTransactionTimeBetween(
                 account.getId(), start, transaction.getTransactionTime());
-        if(amount.doubleValue()>45 && amount.doubleValue()<=(findMaxAmount(transactionsRecent)).doubleValue()*1.5){
+        if(amount.doubleValue()>1000 && amount.doubleValue()<=(findMaxAmount(transactionsRecent)).doubleValue()*1.5){
             return true;
-        } else if(amount.doubleValue()<=45){
+        } else if(amount.doubleValue()<=1000){
             return true;
         }
         return false;
     }
 
-    public Boolean notExceedMaxCount(Account account, Transaction transaction, BigDecimal amount){
+    public Boolean notExceedMaxCount(Account account, Transaction transaction){
         Timestamp start = transaction.getTransactionTime();
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(start.getTime());

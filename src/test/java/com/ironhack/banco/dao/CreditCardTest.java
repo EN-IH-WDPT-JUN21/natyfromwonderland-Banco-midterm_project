@@ -73,10 +73,10 @@ class CreditCardTest {
     }
 
     @Test
-    void sendMoney() throws Exception {
-        BigDecimal amount = new BigDecimal("35");
+    void sendMoneyCC() throws Exception {
+        Money amount = new Money(new BigDecimal("35"));
         cc2.sendMoney(amount);
-        assertEquals(new BigDecimal("385.00"), cc2.getBalance().getAmount());
+        assertEquals(new BigDecimal("315.00"), cc2.getBalance().getAmount());
     }
 
     @Test
