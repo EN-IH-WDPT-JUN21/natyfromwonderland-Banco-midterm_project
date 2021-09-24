@@ -59,8 +59,8 @@ public class Checking extends Account {
         return this.getBalance();
     }
 
-    public Checking(Long id, Money balance, Long secretKey, Date creationDate, @Valid AccountHolder primaryOwner, List<Transaction> transactions, Money minBalance) {
-        super(id, balance, secretKey, creationDate, primaryOwner, transactions);
+    public Checking(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner, Money minBalance) {
+        super(id, balance, secretKey, creationDate, primaryOwner);
         setMinBalance(minBalance);
     }
 

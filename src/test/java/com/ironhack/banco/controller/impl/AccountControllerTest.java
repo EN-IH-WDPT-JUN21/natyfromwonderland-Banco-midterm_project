@@ -8,6 +8,7 @@ import com.ironhack.banco.dao.utils.Address;
 import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.repository.*;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,7 @@ class AccountControllerTest {
         accountHolder3 = new AccountHolder("Marie Curie", java.sql.Date.valueOf("2000-09-12"), address2);
         accountHolderRepository.saveAll(List.of(accountHolder, accountHolder2, accountHolder3));
         account = new Checking(234578784L, new Money(new BigDecimal("1000")), 567478L,
-                java.sql.Date.valueOf("2020-04-02"), accountHolder, transactions,new Money(new BigDecimal("150")));
+                java.sql.Date.valueOf("2020-04-02"), accountHolder,new Money(new BigDecimal("150")));
         checkingRepository.save(account);
     }
 
@@ -113,14 +114,14 @@ class AccountControllerTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = dateFormat.parse("2021-09-02");
         account5 = new Checking(214578774L, new Money(new BigDecimal("2000")), 569378L,
-                date, accountHolder2, transactions2, new Money(new BigDecimal("300")));
+                date, accountHolder2, new Money(new BigDecimal("300")));
         String body = objectMapper.writeValueAsString(account5);
         MvcResult result = mockMvc.perform(
                 post("/accounts/create/checking")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("214578774L"));
+        assertTrue(result.getResponse().getContentAsString().contains("Jane Ayre"));
     }
 
     @Test
@@ -128,14 +129,14 @@ class AccountControllerTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = dateFormat.parse("2021-09-22");
         account2 = new StudentChecking(214578894L, new Money(new BigDecimal("1100")), 469978L,
-                date, accountHolder2, transactions2);
+                date, accountHolder3);
         String body = objectMapper.writeValueAsString(account2);
         MvcResult result = mockMvc.perform(
                 post("/accounts/create/studentchecking")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("214578894L"));
+        assertTrue(result.getResponse().getContentAsString().contains("Marie Curie"));
     }
 
     @Test
@@ -143,14 +144,14 @@ class AccountControllerTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = dateFormat.parse("2021-09-22");
         account4 = new CreditCard(214578895L, new Money(new BigDecimal("1100")), 469979L,
-                date, accountHolder2, transactions2,new BigDecimal("0.15"), new Money(new BigDecimal("500")));
+                date, accountHolder2,new BigDecimal("0.15"), new Money(new BigDecimal("500")));
         String body = objectMapper.writeValueAsString(account4);
         MvcResult result = mockMvc.perform(
                 post("/accounts/create/creditcard")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("214578895L"));
+        assertTrue(result.getResponse().getContentAsString().contains("Jane Ayre"));
     }
 
     @Test
@@ -158,14 +159,14 @@ class AccountControllerTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = dateFormat.parse("2021-09-22");
         account3 = new Savings(214479895L, new Money(new BigDecimal("1100")), 369179L,
-                date, accountHolder2, transactions2, new BigDecimal("0.0025"), new Money(new BigDecimal("500")));
-        String body = objectMapper.writeValueAsString(account4);
+                date, accountHolder2, new BigDecimal("0.0025"), new Money(new BigDecimal("500")));
+        String body = objectMapper.writeValueAsString(account3);
         MvcResult result = mockMvc.perform(
                 post("/accounts/create/savings")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("214479895L"));
+        assertTrue(result.getResponse().getContentAsString().contains("Jane Ayre"));
     }
 
     @Test
@@ -180,5 +181,12 @@ class AccountControllerTest {
         ).andExpect(status().isNoContent()).andReturn();
         assertEquals(account5.getBalance().getAmount(), accountRepository.findById(account.getId()).get().getBalance().getAmount());
 
+    }
+
+    @Test
+    void getAllAccounts() throws Exception {
+        MvcResult result = mockMvc.perform(
+                get("/all")).andExpect(status().isOk()).andReturn();
+        Assertions.assertTrue(result.getResponse().getContentAsString().contains("Adam Smith"));
     }
 }

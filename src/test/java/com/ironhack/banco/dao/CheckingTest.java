@@ -53,9 +53,9 @@ class CheckingTest {
         accountHolder = new AccountHolder("Adam Smith", new Date(1986,5,15), address);
         accountHolderRepository.save(accountHolder);
         ch1 = new Checking(234578784L, new Money(new BigDecimal("1000")), 567478L,
-                new Date(2021,4,20), accountHolder, transactions, new Money(new BigDecimal("150")));
+                new Date(2021,4,20), accountHolder, new Money(new BigDecimal("150")));
         ch2 = new Checking(234578234L, new Money(new BigDecimal("350")), 567498L,
-                new Date(2021,3,24), accountHolder, transactions, new Money(new BigDecimal("300")));
+                new Date(2021,3,24), accountHolder, new Money(new BigDecimal("300")));
         checkingRepository.saveAll(List.of(ch1, ch2));
 
     }

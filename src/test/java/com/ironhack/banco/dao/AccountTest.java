@@ -56,9 +56,9 @@ class AccountTest {
         accountHolder2 = new AccountHolder("Jane Ayre", new Date(1956,7,25), address2);
         accountHolderRepository.saveAll(List.of(accountHolder, accountHolder2));
         acc1 = new Account(234578784L, new Money(new BigDecimal("1000")), 567478L,
-                new Date(2021,4,20), accountHolder, transactions);
+                new Date(2021,4,20), accountHolder);
         acc2 = new Account(234578234L, new Money(new BigDecimal("350")), 567498L,
-                new Date(2021,3,24), accountHolder2, transactions2);
+                new Date(2021,3,24), accountHolder2);
         accountRepository.saveAll(List.of(acc1, acc2));
     }
 

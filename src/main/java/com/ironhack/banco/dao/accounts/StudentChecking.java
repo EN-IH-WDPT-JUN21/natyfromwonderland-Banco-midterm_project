@@ -18,7 +18,7 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "id")
 public class StudentChecking extends Account {
 
-    public StudentChecking(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner, List<Transaction> transactions) {
-        super(id, balance, secretKey, creationDate, primaryOwner, transactions);
+    public StudentChecking(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner) {
+        super(id, balance, secretKey, creationDate, primaryOwner);
     }
 }

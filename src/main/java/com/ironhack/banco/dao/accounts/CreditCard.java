@@ -58,8 +58,8 @@ public class CreditCard extends Account {
     }
 
     public CreditCard(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner,
-                      List<Transaction> transactions, BigDecimal interestRate, Money creditLimit) {
-        super(id, balance, secretKey, creationDate, primaryOwner, transactions);
+                       BigDecimal interestRate, Money creditLimit) {
+        super(id, balance, secretKey, creationDate, primaryOwner);
         this.interestRate = interestRate;
         setCreditLimit(creditLimit);
     }

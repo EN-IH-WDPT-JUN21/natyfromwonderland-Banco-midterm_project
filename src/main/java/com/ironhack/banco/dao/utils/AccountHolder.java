@@ -1,5 +1,6 @@
 package com.ironhack.banco.dao.utils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ironhack.banco.dao.accounts.Account;
 import lombok.AllArgsConstructor;
@@ -24,10 +25,7 @@ import java.util.Optional;
 @PrimaryKeyJoinColumn(name = "id")
 public class AccountHolder extends User{
 
-    @NotBlank(message = "Name cannot be blank")
     private String name;
-
-    @NotNull(message = "Date of birth cannot be blank")
     private Date dateOfBirth;
 
     @AttributeOverrides({
@@ -38,8 +36,8 @@ public class AccountHolder extends User{
             @AttributeOverride(name="country",column=@Column(name="current_country"))
     })
 
-    @Valid
     @Embedded
+    @Valid
     private Address primaryAddress;
 
     @AttributeOverrides({
@@ -50,8 +48,8 @@ public class AccountHolder extends User{
             @AttributeOverride(name="country",column=@Column(name="mail_country"))
     })
 
-    @Valid
     @Embedded
+    @Valid
     private Address mailingAddress;
 
 
@@ -64,12 +62,12 @@ public class AccountHolder extends User{
     }
 
 
-   @JsonManagedReference
-    @OneToMany(mappedBy = "primaryOwner")
+    @OneToMany(mappedBy = "primaryOwner", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Account> accountList;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "secondaryOwner")
+    @OneToMany(mappedBy = "secondaryOwner", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Account> accountListTwo;
 
     public AccountHolder(String name, Date dateOfBirth, Address primaryAddress) {

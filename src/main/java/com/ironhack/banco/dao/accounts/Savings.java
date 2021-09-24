@@ -50,8 +50,8 @@ public class Savings extends Account {
     }
 
     public Savings(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner,
-                   List<Transaction> transactions, BigDecimal interestRate, Money minBalance) {
-        super(id, balance, secretKey, creationDate, primaryOwner, transactions);
+                   BigDecimal interestRate, Money minBalance) {
+        super(id, balance, secretKey, creationDate, primaryOwner);
         this.interestRate = interestRate;
         setMinBalance(minBalance);
     }

@@ -51,10 +51,10 @@ class CreditCardTest {
         accountHolder = new AccountHolder("Jane Smith", new Date(1986,5,15), address);
         accountHolderRepository.save(accountHolder);
         cc1 = new CreditCard(234578784L, new Money(new BigDecimal("1000")), 567478L,
-                new Date(2021,4,20), accountHolder, transactions,
+                new Date(2021,4,20), accountHolder,
                 new BigDecimal("0.15"), new Money(new BigDecimal("500")));
         cc2 = new CreditCard(234578234L, new Money(new BigDecimal("350")), 567498L,
-                new Date(2021,3,24), accountHolder, transactions,
+                new Date(2021,3,24), accountHolder,
                 new BigDecimal("0.15"), new Money(new BigDecimal("101000")));
         creditCardRepository.saveAll(List.of(cc1, cc2));
     }
@@ -63,6 +63,7 @@ class CreditCardTest {
     void tearDown() {
         accountRepository.deleteAll();
         creditCardRepository.deleteAll();
+        accountHolderRepository.deleteAll();
     }
 
     @Test

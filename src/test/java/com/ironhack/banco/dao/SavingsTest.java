@@ -53,10 +53,10 @@ class SavingsTest {
         accountHolder = new AccountHolder("Adam Smith", new Date(1986,5,15), address);
         accountHolderRepository.save(accountHolder);
         sav1 = new Savings(234579784L, new Money(new BigDecimal("1000")), 567478L,
-                new Date(2020,4,20), accountHolder, transactions,
+                new Date(2020,4,20), accountHolder,
                 new BigDecimal("0.0025"), new Money(new BigDecimal("500")));
         sav2 = new Savings(233578234L, new Money(new BigDecimal("350")), 567498L,
-                new Date(2021,3,24), accountHolder, transactions,
+                new Date(2021,3,24), accountHolder,
                 new BigDecimal("0.0025"), new Money(new BigDecimal("50")));
         savingsRepository.saveAll(List.of(sav1, sav2));
     }

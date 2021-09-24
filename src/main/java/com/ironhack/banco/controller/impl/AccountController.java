@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -47,10 +48,8 @@ public class AccountController implements IAccountController {
     @PostMapping("/accounts/create/checking")
     @ResponseStatus(HttpStatus.CREATED)
     public Checking createNewChecking(@RequestBody @Valid Checking checking) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date today = new Date();
-        Date date = dateFormat.parse(today.toString());
-        if(checking.checkPrimaryOwnerAge(date).intValue()>=24) {
+        if(checking.checkPrimaryOwnerAge(today).intValue()>=24) {
             return checkingRepository.save(checking);
         } else{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Checking account is only created for " +
@@ -62,10 +61,8 @@ public class AccountController implements IAccountController {
     @PostMapping("/accounts/create/studentchecking")
     @ResponseStatus(HttpStatus.CREATED)
     public StudentChecking createStudentChecking(@RequestBody @Valid StudentChecking studentChecking) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date today = new Date();
-        Date date = dateFormat.parse(today.toString());
-        if(studentChecking.checkPrimaryOwnerAge(date)<24) {
+        if(studentChecking.checkPrimaryOwnerAge(today)<24) {
             return studentCheckingRepository.save(studentChecking);
         } else{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student checking account is only created for " +
@@ -77,10 +74,8 @@ public class AccountController implements IAccountController {
     @PostMapping("/accounts/create/creditcard")
     @ResponseStatus(HttpStatus.CREATED)
     public CreditCard createNewCreditCard(@RequestBody @Valid CreditCard creditCard) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date today = new Date();
-        Date date = dateFormat.parse(today.toString());
-        if(creditCard.checkPrimaryOwnerAge(date)>=18) {
+        if(creditCard.checkPrimaryOwnerAge(today)>=18) {
                 return creditCardRepository.save(creditCard);
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Credit Card account is only created for " +
@@ -95,39 +90,74 @@ public class AccountController implements IAccountController {
         return savingsRepository.save(savings);
     }
 
+    //route to update account balance
     @PatchMapping("/accounts/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateBalance(@PathVariable("id") Long id, @RequestBody @Valid Money balance){
         accountService.updateBalance(id, balance);
     }
 
+    //route to get account by account id
     @GetMapping("/accounts/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Account getById(@PathVariable(name = "id") Long id) throws ParseException {
         Optional<Account> account = accountRepository.findById(id);
 
         if(account.isPresent()) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date today = new Date();
-            Date date = dateFormat.parse(today.toString());
 
             if (account.get() instanceof Checking) {
-                account.get().setBalance(((Checking) account.get()).applyFees(date));
+                account.get().setBalance(((Checking) account.get()).applyFees(today));
                 accountRepository.save(account.get());
                 return account.get();
             } else if (account.get() instanceof StudentChecking) {
                 return account.get();
             } else if (account.get() instanceof Savings) {
-                account.get().setBalance(((Savings) account.get()).applyInterest(date));
+                account.get().setBalance(((Savings) account.get()).applyInterest(today));
                 accountRepository.save(account.get());
                 return account.get();
             } else if (account.get() instanceof CreditCard) {
-                account.get().setBalance(((CreditCard) account.get()).applyInterest(date));
+                account.get().setBalance(((CreditCard) account.get()).applyInterest(today));
                 accountRepository.save(account.get());
                 return account.get();
             }
         }
         return null;
+    }
+
+    //route to get account balance by user Id
+    @GetMapping("/accounts/user/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Money getByUserId(@PathVariable(name = "id") Long id) throws ParseException {
+        Optional<Account> account = accountRepository.findByPrimaryOwnerId(id);
+
+        if(account.isPresent()) {
+            Date today = new Date();
+
+            if (account.get() instanceof Checking) {
+                account.get().setBalance(((Checking) account.get()).applyFees(today));
+                accountRepository.save(account.get());
+                return account.get().getBalance();
+            } else if (account.get() instanceof StudentChecking) {
+                return account.get().getBalance();
+            } else if (account.get() instanceof Savings) {
+                account.get().setBalance(((Savings) account.get()).applyInterest(today));
+                accountRepository.save(account.get());
+                return account.get().getBalance();
+            } else if (account.get() instanceof CreditCard) {
+                account.get().setBalance(((CreditCard) account.get()).applyInterest(today));
+                accountRepository.save(account.get());
+                return account.get().getBalance();
+            }
+        }
+        return null;
+    }
+
+    //route to return the list of accounts
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Account> getAllAccounts(){
+        return accountRepository.findAll();
     }
 
 }

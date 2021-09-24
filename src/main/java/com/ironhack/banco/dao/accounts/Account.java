@@ -1,6 +1,7 @@
 package com.ironhack.banco.dao.accounts;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ironhack.banco.dao.utils.AccountHolder;
 import com.ironhack.banco.dao.utils.Money;
@@ -12,6 +13,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -48,28 +50,19 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "primary_owner_id")
+    @NotNull
     @Valid
+    @JoinColumn(name = "primary_owner_id")
     private AccountHolder primaryOwner;
 
-    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "secondary_owner_id")
     @Valid
+    @JoinColumn(name = "secondary_owner_id")
     private AccountHolder secondaryOwner;
 
-    public Optional getSecondaryOwner() {
-        return Optional.ofNullable(this.secondaryOwner);
-    }
-
-    public void setSecondaryOwner(final AccountHolder secondaryOwner) {
-        this.secondaryOwner = secondaryOwner;
-    }
-
-    @JsonManagedReference
     @OneToMany(mappedBy = "account")
+    @JsonIgnore
     private List<Transaction> transactions = new ArrayList<>();
 
 
@@ -92,13 +85,12 @@ public class Account {
     }
 
 
-    public Account(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner, List<Transaction> transactions) {
+    public Account(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner) {
         this.id = id;
         this.balance = balance;
         this.secretKey = secretKey;
         this.creationDate = creationDate;
         this.primaryOwner = primaryOwner;
-        setTransactions(transactions);
     }
 
     //This will be needed for account creation process

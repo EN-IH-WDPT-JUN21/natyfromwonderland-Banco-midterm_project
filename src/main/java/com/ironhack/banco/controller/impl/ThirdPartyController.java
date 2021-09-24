@@ -6,6 +6,7 @@ import com.ironhack.banco.dao.utils.ThirdParty;
 import com.ironhack.banco.dto.TransactionDTO;
 import com.ironhack.banco.repository.AccountRepository;
 import com.ironhack.banco.repository.ThirdPartyRepository;
+import com.ironhack.banco.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,9 @@ public class ThirdPartyController implements IThirdPartyController {
     private AccountRepository accountRepository;
 
     @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
     private BusinessLogic businessLogic;
 
     //Route to create a third party
@@ -35,16 +39,17 @@ public class ThirdPartyController implements IThirdPartyController {
         return thirdPartyRepository.save(thirdParty);
     }
 
-    @PostMapping("/thirdparty/sendmoney")
-    public void sendMoney(@RequestParam String hashedKey, @RequestBody TransactionDTO transactionDTO) throws Exception {
+    @PostMapping("/thirdparty/receivemoney")
+    public void receiveMoney(@RequestParam (name = "hashedkey") String hashedKey, @RequestBody TransactionDTO transactionDTO) throws Exception {
         Optional<Account> optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
         if(thirdPartyRepository.findByHashedKey(hashedKey).isPresent() && optionalAccount.isPresent()){
             Transaction transaction = new Transaction();
-            if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction, transactionDTO.getTransactionAmount().getAmount())
+            transaction.setTransactionAmount(transactionDTO.getTransactionAmount());
+            transaction.setTransactionTime(new Date());
+            transaction.setAccount(optionalAccount.get());
+            transactionRepository.save(transaction);
+            if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
             && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
-                transaction.setTransactionAmount(transactionDTO.getTransactionAmount());
-                transaction.setTransactionTime(new Timestamp(System.currentTimeMillis()));
-                transaction.setAccount(optionalAccount.get());
                 optionalAccount.get().addTransaction(transaction);
                 if(optionalAccount.get() instanceof CreditCard) {
                     ((CreditCard) optionalAccount.get()).applyInterest(new Date());
@@ -57,24 +62,29 @@ public class ThirdPartyController implements IThirdPartyController {
                 }
                 accountRepository.save(optionalAccount.get());
             }
+            businessLogic.freezeAcc(optionalAccount.get());
+            transactionRepository.delete(transaction);
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No parameters found");
     }
 
-    @PostMapping("/thirdparty/receivemoney")
-    public void receiveMoney(@RequestParam String hashedKey, @RequestBody TransactionDTO transactionDTO) {
+    @PostMapping("/thirdparty/sendmoney")
+    public void sendMoney(@RequestBody TransactionDTO transactionDTO) {
         Optional<Account> optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
-        if(thirdPartyRepository.findByHashedKey(hashedKey).isPresent() && optionalAccount.isPresent()){
+        if(thirdPartyRepository.findByHashedKey(transactionDTO.getHashedKey()).isPresent() && optionalAccount.isPresent()){
             Transaction transaction = new Transaction();
-            if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction, transactionDTO.getTransactionAmount().getAmount())
+            transaction.setTransactionAmount(transactionDTO.getTransactionAmount());
+            transaction.setAccount(optionalAccount.get());
+            transaction.setTransactionTime(new Date());
+            transactionRepository.save(transaction);
+            if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
                     && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
-                transaction.setTransactionAmount(transactionDTO.getTransactionAmount());
-                transaction.setTransactionTime(new Timestamp(System.currentTimeMillis()));
-                transaction.setAccount(optionalAccount.get());
                 optionalAccount.get().addTransaction(transaction);
                 optionalAccount.get().receiveMoney(transaction.getTransactionAmount());
                 accountRepository.save(optionalAccount.get());
             }
+            businessLogic.freezeAcc(optionalAccount.get());
+            transactionRepository.delete(transaction);
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No parameters found");
     }

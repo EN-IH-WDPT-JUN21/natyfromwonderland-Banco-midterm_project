@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -24,15 +25,13 @@ public class Transaction {
     @Embedded
     private Money transactionAmount;
 
-    @Basic
-    private Timestamp transactionTime;
+    private Date transactionTime;
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
-    public Transaction(Money transactionAmount, Timestamp transactionTime, Account account) {
+    public Transaction(Money transactionAmount, Date transactionTime, Account account) {
         this.transactionAmount = transactionAmount;
         this.transactionTime = transactionTime;
         this.account = account;

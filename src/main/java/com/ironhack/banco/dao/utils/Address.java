@@ -16,19 +16,10 @@ import javax.validation.constraints.Pattern;
 @Embeddable
 public class Address {
 
-    @NotNull(message = "House number is required")
     private int houseNumber;
-
-    @NotBlank(message = "Street name is required")
     private String streetName;
-
-    @NotBlank(message = "Postcode is required")
     private String postcode;
-
-    @NotBlank(message = "City is required")
     private String city;
-
-    @NotBlank(message = "Country is required")
     private String country;
 
     public Address(int houseNumber, String streetName, String postcode, String city, String country) {

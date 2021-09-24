@@ -15,19 +15,20 @@ public class TransactionDTO {
     private Money transactionAmount;
     private Long accountId;
     private Long accountSecretKey;
-    private String primaryOwnerName;
-    private String secondaryOwnerName;
+    private String ownerName;
+    private String hashedKey;
 
-    public TransactionDTO(Money transactionAmount, Long accountId, Long accountSecretKey) {
+    public TransactionDTO(String hashedKey, Money transactionAmount, Long accountId, Long accountSecretKey) {
+        this.hashedKey = hashedKey;
         this.transactionAmount = transactionAmount;
         this.accountId = accountId;
         this.accountSecretKey = accountSecretKey;
     }
 
-    public TransactionDTO(Money transactionAmount, Long accountId, String primaryOwnerName, String secondaryOwnerName) {
+    public TransactionDTO(Money transactionAmount, Long accountId, String ownerName) {
         this.transactionAmount = transactionAmount;
         this.accountId = accountId;
-        this.primaryOwnerName = primaryOwnerName;
-        this.secondaryOwnerName = secondaryOwnerName;
+        this.ownerName = ownerName;
     }
+
 }

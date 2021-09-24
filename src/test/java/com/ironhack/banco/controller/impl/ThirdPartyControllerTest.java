@@ -80,7 +80,7 @@ class ThirdPartyControllerTest {
         thirdPartyRepository.save(thirdParty);
 
         savings1 = new Savings(234578784L, new Money(new BigDecimal("1000")), 563478L,
-                new Date(2020,4,20), accountHolder, transactions,
+                new Date(2020,4,20), accountHolder,
                 new BigDecimal("0.0025"), new Money(new BigDecimal("500")));
 
     }
@@ -89,6 +89,7 @@ class ThirdPartyControllerTest {
     void tearDown(){
         thirdPartyRepository.deleteAll();
         savingsRepository.deleteAll();
+        transactionRepository.deleteAll();
         accountHolderRepository.deleteAll();
     }
 
@@ -107,15 +108,13 @@ class ThirdPartyControllerTest {
 
     @Test
     void sendMoney_NoError() throws Exception {
-        TransactionDTO transaction = new TransactionDTO(new Money(new BigDecimal("30")), savings1.getId(), savings1.getSecretKey());
-        String param = thirdParty.getHashedKey();
+        TransactionDTO transaction = new TransactionDTO(thirdParty.getHashedKey(), new Money(new BigDecimal("30")), savings1.getId(), savings1.getSecretKey());
         String body = objectMapper.writeValueAsString(transaction);
         MvcResult result = mockMvc.perform(
                 post("/thirdparty/sendmoney")
-                        .queryParam(param)
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains("234578784L"));
+        assertEquals(new Money(new BigDecimal("960.00")), savings1.getBalance().getAmount());
     }
 }
