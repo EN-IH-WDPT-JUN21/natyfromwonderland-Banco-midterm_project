@@ -1,22 +1,28 @@
 package com.ironhack.banco.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironhack.banco.dao.utils.Money;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class TransactionDTO {
 
+    @JsonProperty(required = true)
     private Money transactionAmount;
+
+    @JsonProperty(required = true)
     private Long accountId;
+
     private Long accountSecretKey;
-    private String ownerName;
+    private String primaryOwner;
+    private String secondaryOwner;
     private String hashedKey;
+
 
     public TransactionDTO(String hashedKey, Money transactionAmount, Long accountId, Long accountSecretKey) {
         this.hashedKey = hashedKey;
@@ -25,10 +31,9 @@ public class TransactionDTO {
         this.accountSecretKey = accountSecretKey;
     }
 
-    public TransactionDTO(Money transactionAmount, Long accountId, String ownerName) {
+    public TransactionDTO(Money transactionAmount, Long accountId, String primaryOwner) {
         this.transactionAmount = transactionAmount;
         this.accountId = accountId;
-        this.ownerName = ownerName;
+        this.primaryOwner = primaryOwner;
     }
-
 }

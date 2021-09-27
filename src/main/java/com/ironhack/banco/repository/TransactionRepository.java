@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     Optional<Transaction> findById(Long id);
     List<Transaction> findAll();
-    List<Transaction> findByAccountId(Long id);
+    List<Transaction> findBySenderId(Long id);
     List<Transaction> findByTransactionTime (Timestamp transactionTime);
-    List<Transaction> findByAccountIdAndTransactionTimeBetween(Long id, Date start, Date finish);
+    List<Transaction> findBySenderIdAndTransactionTimeBetween(Long id, Date start, Date finish);
 }

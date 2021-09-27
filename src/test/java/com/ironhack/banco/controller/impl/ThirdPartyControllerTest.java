@@ -2,6 +2,7 @@ package com.ironhack.banco.controller.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.banco.BancoApplication;
+import com.ironhack.banco.dao.accounts.Account;
 import com.ironhack.banco.dao.accounts.BusinessLogic;
 import com.ironhack.banco.dao.accounts.Savings;
 import com.ironhack.banco.dao.accounts.Transaction;
@@ -10,10 +11,7 @@ import com.ironhack.banco.dao.utils.Address;
 import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.dao.utils.ThirdParty;
 import com.ironhack.banco.dto.TransactionDTO;
-import com.ironhack.banco.repository.AccountHolderRepository;
-import com.ironhack.banco.repository.SavingsRepository;
-import com.ironhack.banco.repository.ThirdPartyRepository;
-import com.ironhack.banco.repository.TransactionRepository;
+import com.ironhack.banco.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,6 +55,9 @@ class ThirdPartyControllerTest {
     private SavingsRepository savingsRepository;
 
     @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
     private AccountHolderRepository accountHolderRepository;
 
     @Autowired
@@ -63,9 +65,9 @@ class ThirdPartyControllerTest {
 
     private ThirdParty thirdParty;
     private ThirdParty thirdParty2;
-    private Savings savings1;
+    private Account savings1;
     AccountHolder accountHolder;
-    List<Transaction> transactions;
+    List<Transaction> transactions = new ArrayList<>();
     Address address;
 
     @BeforeEach
@@ -82,6 +84,8 @@ class ThirdPartyControllerTest {
         savings1 = new Savings(234578784L, new Money(new BigDecimal("1000")), 563478L,
                 new Date(2020,4,20), accountHolder,
                 new BigDecimal("0.0025"), new Money(new BigDecimal("500")));
+
+        accountRepository.save(savings1);
 
     }
 
@@ -115,6 +119,6 @@ class ThirdPartyControllerTest {
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertEquals(new Money(new BigDecimal("960.00")), savings1.getBalance().getAmount());
+        assertEquals(new Money(new BigDecimal("1030.00")), savings1.getBalance().getAmount());
     }
 }

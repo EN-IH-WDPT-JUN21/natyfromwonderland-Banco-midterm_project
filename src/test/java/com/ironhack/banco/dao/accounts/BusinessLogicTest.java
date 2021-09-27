@@ -65,13 +65,10 @@ class BusinessLogicTest {
                 new Date(2021,3,24), accountHolder2);
         accountRepository.saveAll(List.of(acc1, acc2));
         transaction1 = new Transaction(new Money(new BigDecimal("500")),
-                new Date(2021, Calendar.SEPTEMBER, 20, 19, 0, 1), acc1);
+                new Date(2021, Calendar.SEPTEMBER, 20, 19, 0, 1), acc1.getId());
         transaction2 = new Transaction(new Money(new BigDecimal("60")),
-                new Date(2021, Calendar.APRIL, 23, 19, 0, 0), acc1);
+                new Date(2021, Calendar.APRIL, 23, 19, 0, 0), acc1.getId());
         transactionRepository.saveAll(List.of(transaction1, transaction2));
-        acc1.addTransaction(transaction1);
-        acc1.addTransaction(transaction2);
-        accountRepository.saveAll(List.of(acc1, acc2));
     }
 
     @AfterEach
@@ -90,7 +87,7 @@ class BusinessLogicTest {
     @Test
     void notExceedMaxAmount() {
         Transaction transaction3 = new Transaction(new Money(new BigDecimal("400")),
-                new Date(2021, Calendar.SEPTEMBER, 20, 19, 5, 0), acc1);
+                new Date(2021, Calendar.SEPTEMBER, 20, 19, 5, 0), acc1.getId());
         Boolean result = businessLogic.notExceedMaxAmount(acc1, transaction3);
         assertEquals(true, result);
 
@@ -99,7 +96,7 @@ class BusinessLogicTest {
     @Test
     void notExceedMaxCount() {
         Transaction transaction4 = new Transaction(new Money(new BigDecimal("400")),
-                new Date(2021, Calendar.SEPTEMBER, 20, 19, 0, 2), acc1);
+                new Date(2021, Calendar.SEPTEMBER, 20, 19, 0, 2), acc1.getId());
         Boolean result = businessLogic.notExceedMaxCount(acc1, transaction4);
         assertEquals(true, result);
     }
@@ -107,10 +104,12 @@ class BusinessLogicTest {
     @Test
     void findMaxAmount() {
         Transaction transaction5 = new Transaction(new Money(new BigDecimal("400")),
-                new Date(2021, Calendar.SEPTEMBER, 20, 19, 0, 2), acc1);
-        acc1.addTransaction(transaction5);
-        accountRepository.save(acc1);
-        BigDecimal result = businessLogic.findMaxAmount(acc1.getTransactions());
+                new Date(2021, Calendar.SEPTEMBER, 20, 19, 0, 2), acc1.getId());
+        transactionRepository.save(transaction5);
+        var transactions = transactionRepository.findBySenderIdAndTransactionTimeBetween(acc1.getId(),
+                new Date(2021, Calendar.SEPTEMBER, 20, 19, 0, 1),
+                new Date(2021, Calendar.SEPTEMBER, 20, 19, 0, 2));
+        BigDecimal result = businessLogic.findMaxAmount(transactions);
         assertEquals(new BigDecimal("500.00"), result);
 
     }

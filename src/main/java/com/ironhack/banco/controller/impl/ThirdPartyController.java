@@ -40,17 +40,17 @@ public class ThirdPartyController implements IThirdPartyController {
     }
 
     @PostMapping("/thirdparty/receivemoney")
-    public void receiveMoney(@RequestParam (name = "hashedkey") String hashedKey, @RequestBody TransactionDTO transactionDTO) throws Exception {
+    public Transaction receiveMoney(@RequestParam (name = "hashedkey") String hashedKey, @RequestBody TransactionDTO transactionDTO) throws Exception {
         Optional<Account> optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
-        if(thirdPartyRepository.findByHashedKey(hashedKey).isPresent() && optionalAccount.isPresent()){
+        Optional<ThirdParty> optionalThirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
+        if(optionalThirdParty.isPresent() && optionalAccount.isPresent()){
             Transaction transaction = new Transaction();
             transaction.setTransactionAmount(transactionDTO.getTransactionAmount());
             transaction.setTransactionTime(new Date());
-            transaction.setAccount(optionalAccount.get());
+            transaction.setSenderId(optionalAccount.get().getId());
             transactionRepository.save(transaction);
             if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
             && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
-                optionalAccount.get().addTransaction(transaction);
                 if(optionalAccount.get() instanceof CreditCard) {
                     ((CreditCard) optionalAccount.get()).applyInterest(new Date());
                     ((CreditCard) optionalAccount.get()).sendMoneyCC(transaction.getTransactionAmount());
@@ -69,23 +69,20 @@ public class ThirdPartyController implements IThirdPartyController {
     }
 
     @PostMapping("/thirdparty/sendmoney")
-    public void sendMoney(@RequestBody TransactionDTO transactionDTO) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Transaction sendMoney(@RequestBody TransactionDTO transactionDTO) {
         Optional<Account> optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
-        if(thirdPartyRepository.findByHashedKey(transactionDTO.getHashedKey()).isPresent() && optionalAccount.isPresent()){
-            Transaction transaction = new Transaction();
-            transaction.setTransactionAmount(transactionDTO.getTransactionAmount());
-            transaction.setAccount(optionalAccount.get());
-            transaction.setTransactionTime(new Date());
-            transactionRepository.save(transaction);
+        Optional<ThirdParty> optionalThirdParty = thirdPartyRepository.findByHashedKey(transactionDTO.getHashedKey());
+        Date date = new Date();
+        Transaction transaction = new Transaction(transactionDTO.getTransactionAmount(), date, optionalAccount.get().getId());
+        if(optionalThirdParty.isPresent() && optionalAccount.isPresent()){
             if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
                     && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
-                optionalAccount.get().addTransaction(transaction);
                 optionalAccount.get().receiveMoney(transaction.getTransactionAmount());
                 accountRepository.save(optionalAccount.get());
             }
             businessLogic.freezeAcc(optionalAccount.get());
-            transactionRepository.delete(transaction);
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No parameters found");
+        return transactionRepository.save(transaction);
     }
 }

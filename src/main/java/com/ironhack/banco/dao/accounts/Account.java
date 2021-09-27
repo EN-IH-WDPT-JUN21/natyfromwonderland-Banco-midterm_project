@@ -61,10 +61,6 @@ public class Account {
     @JoinColumn(name = "secondary_owner_id")
     private AccountHolder secondaryOwner;
 
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    private List<Transaction> transactions = new ArrayList<>();
-
 
     public void sendMoney(Money amount) throws Exception {
         Money newBalance = new Money(balance.decreaseAmount(amount));
@@ -78,10 +74,6 @@ public class Account {
     public void receiveMoney(Money amount){
         Money newBalance = new Money(balance.increaseAmount(amount));
         this.setBalance(newBalance);
-    }
-
-    public void addTransaction(Transaction transaction) {
-        this.transactions.add(transaction);
     }
 
 

@@ -27,14 +27,20 @@ public class Transaction {
 
     private Date transactionTime;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
-    private Account account;
+    private Long senderId;
+    private Long receiverId;
 
-    public Transaction(Money transactionAmount, Date transactionTime, Account account) {
+    public Transaction(Money transactionAmount, Date transactionTime, Long senderId, Long receiverId) {
         this.transactionAmount = transactionAmount;
         this.transactionTime = transactionTime;
-        this.account = account;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+    }
+
+    public Transaction(Money transactionAmount, Date transactionTime, Long senderId) {
+        this.transactionAmount = transactionAmount;
+        this.transactionTime = transactionTime;
+        this.senderId = senderId;
     }
 
 }

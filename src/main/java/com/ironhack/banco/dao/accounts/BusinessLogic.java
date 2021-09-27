@@ -30,7 +30,7 @@ public class BusinessLogic {
     //Also, the logic could potentially look at average/ maximum during a longer period of time.
     public Boolean notExceedMaxAmount(Account account, Transaction transaction)  {
         Date start = addHoursToTransactionDate(transaction.getTransactionTime(), -24);
-        var transactionsRecent = transactionRepository.findByAccountIdAndTransactionTimeBetween(
+        var transactionsRecent = transactionRepository.findBySenderIdAndTransactionTimeBetween(
                 account.getId(), start, transaction.getTransactionTime());
         BigDecimal maxAmount = findMaxAmount(transactionsRecent);
         if(transactionsRecent.size()>0 && transaction.getTransactionAmount().getAmount().doubleValue()>100 &&
@@ -47,7 +47,7 @@ public class BusinessLogic {
     //Method to establish whether there were more than 1 transaction in a second.
     public Boolean notExceedMaxCount(Account account, Transaction transaction){
         Date start = addSecondsToTransactionDate(transaction.getTransactionTime(), -1);
-        var transactionsRecent = transactionRepository.findByAccountIdAndTransactionTimeBetween(
+        var transactionsRecent = transactionRepository.findBySenderIdAndTransactionTimeBetween(
                 account.getId(), start, transaction.getTransactionTime());
         if(transactionsRecent.size()<=1){
             return true;

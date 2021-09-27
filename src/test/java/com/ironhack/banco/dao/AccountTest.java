@@ -43,8 +43,6 @@ class AccountTest {
     Account acc2;
     AccountHolder accountHolder;
     AccountHolder accountHolder2;
-    List<Transaction> transactions = new ArrayList<>();
-    List<Transaction> transactions2;
     Address address;
     Address address2;
 
@@ -80,14 +78,6 @@ class AccountTest {
         assertEquals(new BigDecimal("1050.00"), acc1.getBalance().getAmount());
     }
 
-    @Test
-    void addTransaction() {
-       Transaction transaction = new Transaction(new Money(new BigDecimal("60")),
-               new Timestamp(2021, 9, 20, 19, 0, 0, 0), acc1);
-        acc1.addTransaction(transaction);
-        accountRepository.save(acc1);
-        assertEquals(1, acc1.getTransactions().size());
-    }
 
     @Test
     void checkPrimaryOwnerAge(){
