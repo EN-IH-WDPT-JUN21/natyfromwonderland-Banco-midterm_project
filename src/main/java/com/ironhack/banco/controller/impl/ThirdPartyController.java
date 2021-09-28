@@ -2,17 +2,20 @@ package com.ironhack.banco.controller.impl;
 
 import com.ironhack.banco.controller.interfaces.IThirdPartyController;
 import com.ironhack.banco.dao.accounts.*;
+import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.dao.utils.ThirdParty;
 import com.ironhack.banco.dto.TransactionDTO;
 import com.ironhack.banco.repository.AccountRepository;
 import com.ironhack.banco.repository.ThirdPartyRepository;
 import com.ironhack.banco.repository.TransactionRepository;
+import com.ironhack.banco.service.interfaces.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Optional;
@@ -32,6 +35,9 @@ public class ThirdPartyController implements IThirdPartyController {
     @Autowired
     private BusinessLogic businessLogic;
 
+    @Autowired
+    private IAccountService accountService;
+
     //Route to create a third party
     @PostMapping("/thirdparty")
     @ResponseStatus(HttpStatus.CREATED)
@@ -40,49 +46,60 @@ public class ThirdPartyController implements IThirdPartyController {
     }
 
     @PostMapping("/thirdparty/receivemoney")
-    public Transaction receiveMoney(@RequestParam (name = "hashedkey") String hashedKey, @RequestBody TransactionDTO transactionDTO) throws Exception {
-        Optional<Account> optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
-        Optional<ThirdParty> optionalThirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Transaction receiveMoney(@RequestBody TransactionDTO transactionDTO) throws Exception {
+        var optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
+        var optionalThirdParty = thirdPartyRepository.findByHashedKey(transactionDTO.getHashedKey());
+        Date date = new Date();
         if(optionalThirdParty.isPresent() && optionalAccount.isPresent()){
-            Transaction transaction = new Transaction();
-            transaction.setTransactionAmount(transactionDTO.getTransactionAmount());
-            transaction.setTransactionTime(new Date());
-            transaction.setSenderId(optionalAccount.get().getId());
+            Transaction transaction = new Transaction(transactionDTO.getTransactionAmount(), date,
+                    optionalThirdParty.get().getId(), optionalAccount.get().getId());
             transactionRepository.save(transaction);
             if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
             && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
                 if(optionalAccount.get() instanceof CreditCard) {
-                    ((CreditCard) optionalAccount.get()).applyInterest(new Date());
+                    ((CreditCard) optionalAccount.get()).applyInterest(date);
                     ((CreditCard) optionalAccount.get()).sendMoneyCC(transaction.getTransactionAmount());
+                    accountRepository.save(optionalAccount.get());
                 } else if(optionalAccount.get() instanceof Checking){
-                    ((Checking) optionalAccount.get()).applyFees(new Date());
+                    ((Checking) optionalAccount.get()).applyFees(date);
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
+                    accountRepository.save(optionalAccount.get());
+                } else if(optionalAccount.get() instanceof Savings) {
+                    ((Savings) optionalAccount.get()).applyInterest(date);
+                    optionalAccount.get().sendMoney(transaction.getTransactionAmount());
+                    accountRepository.save(optionalAccount.get());
                 } else {
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
+                    accountRepository.save(optionalAccount.get());
                 }
-                accountRepository.save(optionalAccount.get());
+                businessLogic.freezeAcc(optionalAccount.get());
             }
-            businessLogic.freezeAcc(optionalAccount.get());
-            transactionRepository.delete(transaction);
+            return  transaction;
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No parameters found");
+        return  null;
     }
 
     @PostMapping("/thirdparty/sendmoney")
     @ResponseStatus(HttpStatus.CREATED)
     public Transaction sendMoney(@RequestBody TransactionDTO transactionDTO) {
-        Optional<Account> optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
-        Optional<ThirdParty> optionalThirdParty = thirdPartyRepository.findByHashedKey(transactionDTO.getHashedKey());
+        var optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
+        var optionalThirdParty = thirdPartyRepository.findByHashedKey(transactionDTO.getHashedKey());
         Date date = new Date();
-        Transaction transaction = new Transaction(transactionDTO.getTransactionAmount(), date, optionalAccount.get().getId());
         if(optionalThirdParty.isPresent() && optionalAccount.isPresent()){
+            Transaction transaction = new Transaction(transactionDTO.getTransactionAmount(), date,
+                    optionalThirdParty.get().getId(), optionalAccount.get().getId());
+            transactionRepository.save(transaction);
             if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
                     && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
                 optionalAccount.get().receiveMoney(transaction.getTransactionAmount());
                 accountRepository.save(optionalAccount.get());
+            } else {
+                businessLogic.freezeAcc(optionalAccount.get());
             }
-            businessLogic.freezeAcc(optionalAccount.get());
+            return transaction;
         }
-        return transactionRepository.save(transaction);
+        return null;
     }
+
 }

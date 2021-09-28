@@ -11,6 +11,7 @@ import com.ironhack.banco.dao.utils.Address;
 import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.dao.utils.ThirdParty;
 import com.ironhack.banco.dto.TransactionDTO;
+import com.ironhack.banco.enums.Status;
 import com.ironhack.banco.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +68,6 @@ class ThirdPartyControllerTest {
     private ThirdParty thirdParty2;
     private Account savings1;
     AccountHolder accountHolder;
-    List<Transaction> transactions = new ArrayList<>();
     Address address;
 
     @BeforeEach
@@ -119,6 +119,20 @@ class ThirdPartyControllerTest {
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertEquals(new Money(new BigDecimal("1030.00")), savings1.getBalance().getAmount());
+        assertEquals(new Money(new BigDecimal("1030.00")), savings1.getBalance());
+        assertEquals(Status.ACTIVE, savings1.getStatus());
+    }
+
+    @Test
+    void receiveMoney_NoError() throws Exception {
+        TransactionDTO transaction = new TransactionDTO(thirdParty.getHashedKey(), new Money(new BigDecimal("30")), savings1.getId(), savings1.getSecretKey());
+        String body = objectMapper.writeValueAsString(transaction);
+        MvcResult result = mockMvc.perform(
+                post("//thirdparty/receivemoney")
+                        .content(body)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isCreated()).andReturn();
+        assertEquals(new Money(new BigDecimal("1030.00")), savings1.getBalance());
+        assertEquals(Status.ACTIVE, savings1.getStatus());
     }
 }

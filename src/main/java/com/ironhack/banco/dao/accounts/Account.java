@@ -1,8 +1,5 @@
 package com.ironhack.banco.dao.accounts;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ironhack.banco.dao.utils.AccountHolder;
 import com.ironhack.banco.dao.utils.Money;
 import com.ironhack.banco.enums.Status;
@@ -76,16 +73,19 @@ public class Account {
         this.setBalance(newBalance);
     }
 
+    public void setBalance(Money balance) {
+        this.balance = balance;
+    }
 
     public Account(Long id, Money balance, Long secretKey, Date creationDate, AccountHolder primaryOwner) {
         this.id = id;
-        this.balance = balance;
+        setBalance(balance);
         this.secretKey = secretKey;
         this.creationDate = creationDate;
         this.primaryOwner = primaryOwner;
     }
 
-    //This will be needed for account creation process
+    //This will be needed for account creation process, method to check owner's age
     public Long checkPrimaryOwnerAge(Date date){
         Long difference = date.getTime() - this.getPrimaryOwner().getDateOfBirth().getTime();
         Long age = (difference / (1000l*60*60*24*365));

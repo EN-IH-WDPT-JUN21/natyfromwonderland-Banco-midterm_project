@@ -3,6 +3,8 @@ package com.ironhack.banco.controller.impl;
 import com.ironhack.banco.controller.interfaces.IAccountController;
 import com.ironhack.banco.dao.accounts.*;
 import com.ironhack.banco.dao.utils.Money;
+import com.ironhack.banco.dao.utils.ThirdParty;
+import com.ironhack.banco.dto.TransactionDTO;
 import com.ironhack.banco.repository.*;
 import com.ironhack.banco.service.interfaces.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,12 @@ public class AccountController implements IAccountController {
 
     @Autowired
     private IAccountService accountService;
+
+    @Autowired
+    private BusinessLogic businessLogic;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     @GetMapping("/index")
     @ResponseStatus(HttpStatus.OK)
@@ -158,6 +166,62 @@ public class AccountController implements IAccountController {
     @ResponseStatus(HttpStatus.OK)
     public List<Account> getAllAccounts(){
         return accountRepository.findAll();
+    }
+
+    @PostMapping("/accounts/receivemoney")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Transaction receiveMoney(@RequestBody TransactionDTO transactionDTO){
+        Optional<Account> optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
+        Date date = new Date();
+        if(optionalAccount.isPresent()){
+            Transaction transaction = new Transaction(transactionDTO.getTransactionAmount(), date,
+                    optionalAccount.get().getId());
+            transactionRepository.save(transaction);
+            if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
+                    && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
+                optionalAccount.get().receiveMoney(transaction.getTransactionAmount());
+                accountRepository.save(optionalAccount.get());
+            } else {
+                businessLogic.freezeAcc(optionalAccount.get());
+            }
+            return transaction;
+        }
+        return null;
+    }
+
+    //route to transfer money between accounts
+    @PostMapping("/accounts/send")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Transaction sendMoney(@RequestBody TransactionDTO transactionDTO) throws Exception {
+        var optionalAccount = accountRepository.findById(transactionDTO.getAccountId());
+        Date date = new Date();
+        if(optionalAccount.isPresent()){
+            Transaction transaction = new Transaction(transactionDTO.getTransactionAmount(), date,
+                    optionalAccount.get().getId());
+            transactionRepository.save(transaction);
+            if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
+                    && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
+                if(optionalAccount.get() instanceof CreditCard) {
+                    ((CreditCard) optionalAccount.get()).applyInterest(date);
+                    ((CreditCard) optionalAccount.get()).sendMoneyCC(transaction.getTransactionAmount());
+                    accountRepository.save(optionalAccount.get());
+                } else if(optionalAccount.get() instanceof Checking){
+                    ((Checking) optionalAccount.get()).applyFees(date);
+                    optionalAccount.get().sendMoney(transaction.getTransactionAmount());
+                    accountRepository.save(optionalAccount.get());
+                } else if(optionalAccount.get() instanceof Savings) {
+                    ((Savings) optionalAccount.get()).applyInterest(date);
+                    optionalAccount.get().sendMoney(transaction.getTransactionAmount());
+                    accountRepository.save(optionalAccount.get());
+                } else {
+                    optionalAccount.get().sendMoney(transaction.getTransactionAmount());
+                    accountRepository.save(optionalAccount.get());
+                }
+                businessLogic.freezeAcc(optionalAccount.get());
+            }
+            return  transaction;
+        }
+        return  null;
     }
 
 }
