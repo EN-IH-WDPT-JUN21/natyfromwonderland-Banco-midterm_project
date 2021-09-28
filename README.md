@@ -16,6 +16,18 @@ Use, Class and EER Diagrams
 <img alt="eer diagram" src="https://github.com/EN-IH-WDPT-JUN21/natyfromwonderland-Banco-midterm_project/blob/master/images/eer%20diagmam%20ultimo.png">
 
 
+Database set-up
+===========================
+
+create database banco;
+use banco;
+CREATE USER 'banker'@'localhost' IDENTIFIED BY '1r0nH@ck3r';
+
+GRANT ALL PRIVILEGES ON \*.\* TO 'banker'@'localhost';
+
+FLUSH PRIVILEGES;
+
+
 API description
 ===========================
 
