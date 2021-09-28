@@ -9,9 +9,12 @@ Use, Class and EER Diagrams
 
 <img alt="use diagram" src="https://github.com/EN-IH-WDPT-JUN21/natyfromwonderland-Banco-midterm_project/blob/master/images/use%20case%20diagram.png">
 
+
 <img alt="class diagram" src="https://github.com/EN-IH-WDPT-JUN21/natyfromwonderland-Banco-midterm_project/blob/master/images/class%20diagram%20v2.png">
 
+
 <img alt="eer diagram" src="https://github.com/EN-IH-WDPT-JUN21/natyfromwonderland-Banco-midterm_project/blob/master/images/eer%20diagmam%20ultimo.png">
+
 
 API description
 ===========================
