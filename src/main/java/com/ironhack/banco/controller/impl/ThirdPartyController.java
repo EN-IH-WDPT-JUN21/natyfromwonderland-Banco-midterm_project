@@ -58,23 +58,17 @@ public class ThirdPartyController implements IThirdPartyController {
             if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
             && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
                 if(optionalAccount.get() instanceof CreditCard) {
-                    ((CreditCard) optionalAccount.get()).applyInterest(date);
                     ((CreditCard) optionalAccount.get()).sendMoneyCC(transaction.getTransactionAmount());
-                    accountRepository.save(optionalAccount.get());
                 } else if(optionalAccount.get() instanceof Checking){
-                    ((Checking) optionalAccount.get()).applyFees(date);
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
-                    accountRepository.save(optionalAccount.get());
                 } else if(optionalAccount.get() instanceof Savings) {
-                    ((Savings) optionalAccount.get()).applyInterest(date);
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
-                    accountRepository.save(optionalAccount.get());
-                } else {
+                } else if(optionalAccount.get() instanceof StudentChecking){
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
-                    accountRepository.save(optionalAccount.get());
                 }
                 businessLogic.freezeAcc(optionalAccount.get());
             }
+            accountRepository.save(optionalAccount.get());
             return  transaction;
         }
         return  null;
@@ -93,10 +87,10 @@ public class ThirdPartyController implements IThirdPartyController {
             if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
                     && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
                 optionalAccount.get().receiveMoney(transaction.getTransactionAmount());
-                accountRepository.save(optionalAccount.get());
             } else {
                 businessLogic.freezeAcc(optionalAccount.get());
             }
+            accountRepository.save(optionalAccount.get());
             return transaction;
         }
         return null;

@@ -119,8 +119,7 @@ class ThirdPartyControllerTest {
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertEquals(new Money(new BigDecimal("1030.00")), savings1.getBalance());
-        assertEquals(Status.ACTIVE, savings1.getStatus());
+        assertTrue(result.getResponse().getContentAsString().contains(transaction.getAccountId().toString()));
     }
 
     @Test
@@ -132,7 +131,6 @@ class ThirdPartyControllerTest {
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertEquals(new Money(new BigDecimal("1030.00")), savings1.getBalance());
-        assertEquals(Status.ACTIVE, savings1.getStatus());
+        assertTrue(result.getResponse().getContentAsString().contains(transaction.getAccountId().toString()));
     }
 }

@@ -204,21 +204,18 @@ public class AccountController implements IAccountController {
                 if(optionalAccount.get() instanceof CreditCard) {
                     ((CreditCard) optionalAccount.get()).applyInterest(date);
                     ((CreditCard) optionalAccount.get()).sendMoneyCC(transaction.getTransactionAmount());
-                    accountRepository.save(optionalAccount.get());
                 } else if(optionalAccount.get() instanceof Checking){
                     ((Checking) optionalAccount.get()).applyFees(date);
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
-                    accountRepository.save(optionalAccount.get());
                 } else if(optionalAccount.get() instanceof Savings) {
                     ((Savings) optionalAccount.get()).applyInterest(date);
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
-                    accountRepository.save(optionalAccount.get());
                 } else {
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
-                    accountRepository.save(optionalAccount.get());
                 }
                 businessLogic.freezeAcc(optionalAccount.get());
             }
+            accountRepository.save(optionalAccount.get());
             return  transaction;
         }
         return  null;

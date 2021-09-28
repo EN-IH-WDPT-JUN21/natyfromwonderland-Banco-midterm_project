@@ -6,6 +6,7 @@ import com.ironhack.banco.dao.accounts.*;
 import com.ironhack.banco.dao.utils.AccountHolder;
 import com.ironhack.banco.dao.utils.Address;
 import com.ironhack.banco.dao.utils.Money;
+import com.ironhack.banco.dto.TransactionDTO;
 import com.ironhack.banco.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -188,5 +189,17 @@ class AccountControllerTest {
         MvcResult result = mockMvc.perform(
                 get("/all")).andExpect(status().isOk()).andReturn();
         Assertions.assertTrue(result.getResponse().getContentAsString().contains("Adam Smith"));
+    }
+
+    @Test
+    void sendMoney_NoError() throws Exception {
+        TransactionDTO transaction = new TransactionDTO(new Money(new BigDecimal("30")), account.getId(), account.getPrimaryOwner().getName());
+        String body = objectMapper.writeValueAsString(transaction);
+        MvcResult result = mockMvc.perform(
+                post("/accounts/send")
+                        .content(body)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isCreated()).andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains(transaction.getAccountId().toString()));
     }
 }
