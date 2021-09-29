@@ -45,6 +45,7 @@ public class ThirdPartyController implements IThirdPartyController {
         return thirdPartyRepository.save(thirdParty);
     }
 
+    //Route for third party to receive money
     @PostMapping("/thirdparty/receivemoney")
     @ResponseStatus(HttpStatus.CREATED)
     public Transaction receiveMoney(@RequestBody TransactionDTO transactionDTO) throws Exception {
@@ -74,6 +75,7 @@ public class ThirdPartyController implements IThirdPartyController {
         return  null;
     }
 
+    //Route for third party to send money
     @PostMapping("/thirdparty/sendmoney")
     @ResponseStatus(HttpStatus.CREATED)
     public Transaction sendMoney(@RequestBody TransactionDTO transactionDTO) {

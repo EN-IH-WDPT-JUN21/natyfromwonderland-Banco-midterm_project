@@ -39,12 +39,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.httpBasic();
         http.csrf().disable();
         http.authorizeRequests()
-                //.mvcMatchers(HttpMethod.PUT, "/blogs/**").hasAnyRole("ADMIN", "CONTRIBUTOR")
-                //.mvcMatchers(HttpMethod.PUT, "/authors/**").hasAnyRole("ADMIN", "CONTRIBUTOR")
-               // .mvcMatchers(HttpMethod.POST, "/blogs").hasAnyRole("ADMIN", "CONTRIBUTOR")
-                //.mvcMatchers(HttpMethod.POST, "/authors").hasAnyRole("ADMIN")
-                //.mvcMatchers(HttpMethod.DELETE, "/authors/**").hasAnyRole("ADMIN")
-               // .mvcMatchers(HttpMethod.DELETE, "/blogs/**").hasAnyRole("ADMIN")
+                .mvcMatchers(HttpMethod.GET, "/accounts/**").hasAnyRole("ADMIN", "ACCOUNT_HOLDER")
+                .mvcMatchers(HttpMethod.PATCH, "/accounts/**").hasAnyRole("ADMIN")
+                .mvcMatchers(HttpMethod.GET, "/all").hasAnyRole("ADMIN")
+                .mvcMatchers(HttpMethod.POST, "/thirdparty").hasAnyRole("ADMIN")
+                .mvcMatchers(HttpMethod.POST, "/accounts/create/**").hasAnyRole("ADMIN")
+                .mvcMatchers(HttpMethod.POST, "/accounts/**").hasAnyRole("ACCOUNT_HOLDER")
                 .anyRequest().permitAll();
     }
 

@@ -202,4 +202,18 @@ class AccountControllerTest {
         ).andExpect(status().isCreated()).andReturn();
         assertTrue(result.getResponse().getContentAsString().contains(transaction.getAccountId().toString()));
     }
+
+    @Test
+    void receiveMoney() throws Exception {
+        TransactionDTO transaction2 = new TransactionDTO(new Money(new BigDecimal("30")), account.getId(), account.getPrimaryOwner().getName());
+        String body = objectMapper.writeValueAsString(transaction2);
+        MvcResult result = mockMvc.perform(
+                post("/accounts/receivemoney")
+                        .content(body)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isCreated()).andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains(transaction2.getAccountId().toString()));
+    }
+
+
 }

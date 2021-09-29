@@ -124,13 +124,13 @@ class ThirdPartyControllerTest {
 
     @Test
     void receiveMoney_NoError() throws Exception {
-        TransactionDTO transaction = new TransactionDTO(thirdParty.getHashedKey(), new Money(new BigDecimal("30")), savings1.getId(), savings1.getSecretKey());
-        String body = objectMapper.writeValueAsString(transaction);
+        TransactionDTO transaction2 = new TransactionDTO(thirdParty.getHashedKey(), new Money(new BigDecimal("30")), savings1.getId(), savings1.getSecretKey());
+        String body = objectMapper.writeValueAsString(transaction2);
         MvcResult result = mockMvc.perform(
-                post("//thirdparty/receivemoney")
+                post("/thirdparty/receivemoney")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated()).andReturn();
-        assertTrue(result.getResponse().getContentAsString().contains(transaction.getAccountId().toString()));
+        assertTrue(result.getResponse().getContentAsString().contains(transaction2.getAccountId().toString()));
     }
 }

@@ -168,6 +168,7 @@ public class AccountController implements IAccountController {
         return accountRepository.findAll();
     }
 
+    //route to receive money
     @PostMapping("/accounts/receivemoney")
     @ResponseStatus(HttpStatus.CREATED)
     public Transaction receiveMoney(@RequestBody TransactionDTO transactionDTO){
@@ -189,7 +190,7 @@ public class AccountController implements IAccountController {
         return null;
     }
 
-    //route to transfer money between accounts
+    //route to send money
     @PostMapping("/accounts/send")
     @ResponseStatus(HttpStatus.CREATED)
     public Transaction sendMoney(@RequestBody TransactionDTO transactionDTO) throws Exception {
@@ -202,15 +203,12 @@ public class AccountController implements IAccountController {
             if(businessLogic.notExceedMaxAmount(optionalAccount.get(), transaction)
                     && businessLogic.notExceedMaxCount(optionalAccount.get(), transaction)){
                 if(optionalAccount.get() instanceof CreditCard) {
-                    ((CreditCard) optionalAccount.get()).applyInterest(date);
                     ((CreditCard) optionalAccount.get()).sendMoneyCC(transaction.getTransactionAmount());
                 } else if(optionalAccount.get() instanceof Checking){
-                    ((Checking) optionalAccount.get()).applyFees(date);
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
                 } else if(optionalAccount.get() instanceof Savings) {
-                    ((Savings) optionalAccount.get()).applyInterest(date);
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
-                } else {
+                } else if(optionalAccount.get() instanceof StudentChecking){
                     optionalAccount.get().sendMoney(transaction.getTransactionAmount());
                 }
                 businessLogic.freezeAcc(optionalAccount.get());
@@ -220,5 +218,6 @@ public class AccountController implements IAccountController {
         }
         return  null;
     }
+
 
 }
