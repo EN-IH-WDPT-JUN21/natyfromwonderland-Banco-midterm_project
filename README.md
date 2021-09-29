@@ -20,7 +20,9 @@ Database set-up
 ===========================
 
 create database banco;
+
 use banco;
+
 CREATE USER 'banker'@'localhost' IDENTIFIED BY '1r0nH@ck3r';
 
 GRANT ALL PRIVILEGES ON \*.\* TO 'banker'@'localhost';
